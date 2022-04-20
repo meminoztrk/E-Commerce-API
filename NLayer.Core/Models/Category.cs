@@ -8,6 +8,7 @@ namespace NLayer.Core
 {
     public class Category : BaseEntity
     {
+        public int SubId { get; set; }
         public string Name { get; set; }
         public ICollection<Product> Products { get; set; }
     }

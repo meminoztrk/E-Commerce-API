@@ -15,13 +15,35 @@ namespace NLayer.Repository.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    SubId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -35,7 +57,8 @@ namespace NLayer.Repository.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     CategoryId = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -72,33 +95,33 @@ namespace NLayer.Repository.Migrations
 
             migrationBuilder.InsertData(
                 table: "Categories",
-                columns: new[] { "Id", "CreatedDate", "Name", "UpdatedDate" },
-                values: new object[] { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kalemler", null });
-
-            migrationBuilder.InsertData(
-                table: "Categories",
-                columns: new[] { "Id", "CreatedDate", "Name", "UpdatedDate" },
-                values: new object[] { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Kitaplar", null });
-
-            migrationBuilder.InsertData(
-                table: "Categories",
-                columns: new[] { "Id", "CreatedDate", "Name", "UpdatedDate" },
-                values: new object[] { 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Defterler", null });
-
-            migrationBuilder.InsertData(
-                table: "Products",
-                columns: new[] { "Id", "CategoryId", "CreatedDate", "Name", "Price", "Stock", "UpdatedDate" },
-                values: new object[] { 1, 1, new DateTime(2022, 1, 26, 0, 20, 52, 484, DateTimeKind.Local).AddTicks(506), "Kalem 1", 98m, 20, null });
+                columns: new[] { "Id", "CreatedDate", "IsDeleted", "Name", "SubId", "UpdatedDate" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Elektronik", 1, null },
+                    { 2, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Ev, Bahçe, Ofis, Yapı Market", 2, null },
+                    { 3, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Kozmetik, Kişisel Bakım", 3, null },
+                    { 4, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Anne, Bebek", 4, null },
+                    { 5, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Süpermarket, Evcil Hayvan", 5, null },
+                    { 6, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Kitap, Müzik, Oyuncak, Hobi", 6, null },
+                    { 7, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Otomobil, Motosiklet", 7, null },
+                    { 8, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), false, "Spor, Outdoor", 8, null }
+                });
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "CategoryId", "CreatedDate", "Name", "Price", "Stock", "UpdatedDate" },
-                values: new object[] { 2, 1, new DateTime(2022, 1, 26, 0, 20, 52, 484, DateTimeKind.Local).AddTicks(515), "Kalem 2", 125m, 20, null });
+                columns: new[] { "Id", "CategoryId", "CreatedDate", "IsDeleted", "Name", "Price", "Stock", "UpdatedDate" },
+                values: new object[] { 1, 1, new DateTime(2022, 4, 20, 13, 27, 20, 839, DateTimeKind.Local).AddTicks(8622), false, "Kalem 1", 98m, 20, null });
 
             migrationBuilder.InsertData(
                 table: "Products",
-                columns: new[] { "Id", "CategoryId", "CreatedDate", "Name", "Price", "Stock", "UpdatedDate" },
-                values: new object[] { 3, 2, new DateTime(2022, 1, 26, 0, 20, 52, 484, DateTimeKind.Local).AddTicks(516), "Kitap 1", 252m, 20, null });
+                columns: new[] { "Id", "CategoryId", "CreatedDate", "IsDeleted", "Name", "Price", "Stock", "UpdatedDate" },
+                values: new object[] { 2, 1, new DateTime(2022, 4, 20, 13, 27, 20, 839, DateTimeKind.Local).AddTicks(8629), false, "Kalem 2", 125m, 20, null });
+
+            migrationBuilder.InsertData(
+                table: "Products",
+                columns: new[] { "Id", "CategoryId", "CreatedDate", "IsDeleted", "Name", "Price", "Stock", "UpdatedDate" },
+                values: new object[] { 3, 2, new DateTime(2022, 4, 20, 13, 27, 20, 839, DateTimeKind.Local).AddTicks(8630), false, "Kitap 1", 252m, 20, null });
 
             migrationBuilder.InsertData(
                 table: "ProductFeatures",
@@ -126,6 +149,9 @@ namespace NLayer.Repository.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ProductFeatures");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "Products");

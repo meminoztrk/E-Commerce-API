@@ -24,6 +24,12 @@ namespace NLayer.API.Controllers
         {
             return CreateActionResult(await _productService.GetProductWithCategory());
         }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> Any(string product)
+        {
+            bool products = await _productService.AnyAsync(x=>x.Name == product);
+            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(200,"Böyle bir ürün mevcut"));
+        }
 
         [HttpGet]
         public async Task<IActionResult> All()
@@ -70,5 +76,7 @@ namespace NLayer.API.Controllers
 
             return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
         }
+
+       
     }
 }

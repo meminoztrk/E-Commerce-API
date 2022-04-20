@@ -15,6 +15,11 @@ namespace NLayer.Repository.Repositories
         {
         }
 
+        public async Task<List<Category>> GetAllMainCategoryAsync()
+        {
+            return await _context.Categories.Where(x=>x.Id == x.SubId).ToListAsync();
+        }
+
         public async Task<Category> GetSingleCategoryByIdWithProductsAsync(int categoryId)
         {
             return await _context.Categories.Include(x=>x.Products).Where(x=>x.Id == categoryId).SingleOrDefaultAsync();

@@ -33,10 +33,16 @@ namespace NLayer.Repository.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("SubId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
@@ -50,20 +56,109 @@ namespace NLayer.Repository.Migrations
                         {
                             Id = 1,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Kalemler"
+                            IsDeleted = false,
+                            Name = "Elektronik",
+                            SubId = 1
                         },
                         new
                         {
                             Id = 2,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Kitaplar"
+                            IsDeleted = false,
+                            Name = "Ev, Bahçe, Ofis, Yapı Market",
+                            SubId = 2
                         },
                         new
                         {
                             Id = 3,
                             CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Name = "Defterler"
+                            IsDeleted = false,
+                            Name = "Kozmetik, Kişisel Bakım",
+                            SubId = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            Name = "Anne, Bebek",
+                            SubId = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            Name = "Süpermarket, Evcil Hayvan",
+                            SubId = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            Name = "Kitap, Müzik, Oyuncak, Hobi",
+                            SubId = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            Name = "Otomobil, Motosiklet",
+                            SubId = 7
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CreatedDate = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            IsDeleted = false,
+                            Name = "Spor, Outdoor",
+                            SubId = 8
                         });
+                });
+
+            modelBuilder.Entity("NLayer.Core.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Surname")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("NLayer.Core.Product", b =>
@@ -79,6 +174,9 @@ namespace NLayer.Repository.Migrations
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -105,7 +203,8 @@ namespace NLayer.Repository.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreatedDate = new DateTime(2022, 1, 26, 0, 20, 52, 484, DateTimeKind.Local).AddTicks(506),
+                            CreatedDate = new DateTime(2022, 4, 20, 13, 27, 20, 839, DateTimeKind.Local).AddTicks(8622),
+                            IsDeleted = false,
                             Name = "Kalem 1",
                             Price = 98m,
                             Stock = 20
@@ -114,7 +213,8 @@ namespace NLayer.Repository.Migrations
                         {
                             Id = 2,
                             CategoryId = 1,
-                            CreatedDate = new DateTime(2022, 1, 26, 0, 20, 52, 484, DateTimeKind.Local).AddTicks(515),
+                            CreatedDate = new DateTime(2022, 4, 20, 13, 27, 20, 839, DateTimeKind.Local).AddTicks(8629),
+                            IsDeleted = false,
                             Name = "Kalem 2",
                             Price = 125m,
                             Stock = 20
@@ -123,7 +223,8 @@ namespace NLayer.Repository.Migrations
                         {
                             Id = 3,
                             CategoryId = 2,
-                            CreatedDate = new DateTime(2022, 1, 26, 0, 20, 52, 484, DateTimeKind.Local).AddTicks(516),
+                            CreatedDate = new DateTime(2022, 4, 20, 13, 27, 20, 839, DateTimeKind.Local).AddTicks(8630),
+                            IsDeleted = false,
                             Name = "Kitap 1",
                             Price = 252m,
                             Stock = 20
