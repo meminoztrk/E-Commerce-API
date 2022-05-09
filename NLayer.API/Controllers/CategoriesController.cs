@@ -18,11 +18,10 @@ namespace NLayer.API.Controllers
             _categoryService = categoryService;
             _mapper = mapper;
         }
-
-        [HttpGet("[action]/{categoryId}")]
-        public async  Task<IActionResult> GetSingleCategoryByIdWithProducts(int categoryId)
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetCategoryWithSub()
         {
-            return CreateActionResult(await _categoryService.GetSingleCategoryByIdWithProductsAsync(categoryId));
+            return CreateActionResult(await _categoryService.GetCategoryWithSubAsync());
         }
 
         [HttpGet("[action]")]
@@ -31,6 +30,11 @@ namespace NLayer.API.Controllers
             return CreateActionResult(await _categoryService.GetAllMainCategoryAsync());
         }
 
+        [HttpGet("[action]/{categoryId}")]
+        public async  Task<IActionResult> GetSingleCategoryByIdWithProducts(int categoryId)
+        {
+            return CreateActionResult(await _categoryService.GetSingleCategoryByIdWithProductsAsync(categoryId));
+        }
 
         [HttpGet]
         public async Task<IActionResult> All()

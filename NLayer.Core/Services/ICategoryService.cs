@@ -11,5 +11,6 @@ namespace NLayer.Core.Services
     {
          Task<CustomResponseDto<CategoryWithProductsDto>> GetSingleCategoryByIdWithProductsAsync(int categoryId);
         Task<CustomResponseDto<List<CategoryDto>>> GetAllMainCategoryAsync();
+        Task<CustomResponseDto<List<CategoryWithSubsDto>>> GetCategoryWithSubAsync();
     }
 }

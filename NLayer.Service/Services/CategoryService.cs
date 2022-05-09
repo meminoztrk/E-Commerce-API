@@ -22,12 +22,39 @@ namespace NLayer.Service.Services
             _categoryRepository = categoryRepository;
         }
 
+        public async Task<CustomResponseDto<List<CategoryWithSubsDto>>> GetCategoryWithSubAsync()
+        {
+            var mainCategories = await _categoryRepository.GetAllMainCategoryAsync();
+            var subCategories = await _categoryRepository.GetCategoryWithSubAsync();
+
+            List<CategoryWithSubsDto> subs = new List<CategoryWithSubsDto>();
+            foreach (var mainCategory in mainCategories)
+            {
+                List<CategoryDtoWithSubDto> subCats = new List<CategoryDtoWithSubDto>();
+                var selectedSubCategories = subCategories.Where(x => x.SubId == mainCategory.Id).ToList();
+                foreach(var subCategory in selectedSubCategories)
+                {
+                    List<CategoryDto> lastCats = new List<CategoryDto>();
+                    var selectedLastCategories = subCategories.Where(x => x.SubId == subCategory.Id).ToList();
+                    foreach(var lastCategory in selectedLastCategories)
+                    {
+                        lastCats.Add(new CategoryDto { Id = lastCategory.Id, Name = lastCategory.Name });
+                    }
+                    subCats.Add(new CategoryDtoWithSubDto { Id = subCategory.Id, Name = subCategory.Name, SubCategories = lastCats });
+
+                }
+                subs.Add(new CategoryWithSubsDto { Id = mainCategory.Id, Name = mainCategory.Name, SubCategories = subCats });
+            }
+
+            return CustomResponseDto<List<CategoryWithSubsDto>>.Success(200, subs);
+        }
+
         public async Task<CustomResponseDto<List<CategoryDto>>> GetAllMainCategoryAsync()
         {
             var mainCategory = await _categoryRepository.GetAllMainCategoryAsync();
             var categoryDto = _mapper.Map<List<CategoryDto>>(mainCategory.ToList());
             return CustomResponseDto<List<CategoryDto>>.Success(200, categoryDto);
-        }
+        }    
 
         public async Task<CustomResponseDto<CategoryWithProductsDto>> GetSingleCategoryByIdWithProductsAsync(int categoryId)
         {

@@ -14,11 +14,14 @@ namespace NLayer.Repository.Repositories
         public CategoryRepository(AppDbContext context) : base(context)
         {
         }
-
+        public async Task<List<Category>> GetCategoryWithSubAsync()
+        {
+            return await _context.Categories.Where(x => x.Id != x.SubId).ToListAsync();
+        }
         public async Task<List<Category>> GetAllMainCategoryAsync()
         {
             return await _context.Categories.Where(x=>x.Id == x.SubId).ToListAsync();
-        }
+        }     
 
         public async Task<Category> GetSingleCategoryByIdWithProductsAsync(int categoryId)
         {

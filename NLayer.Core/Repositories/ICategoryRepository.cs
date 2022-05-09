@@ -10,5 +10,6 @@ namespace NLayer.Core.Repositories
     {
         Task<Category> GetSingleCategoryByIdWithProductsAsync(int id);
         Task<List<Category>> GetAllMainCategoryAsync();
+        Task<List<Category>> GetCategoryWithSubAsync();
     }
 }
