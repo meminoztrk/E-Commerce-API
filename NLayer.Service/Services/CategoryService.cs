@@ -21,6 +21,27 @@ namespace NLayer.Service.Services
             _mapper = mapper;
             _categoryRepository = categoryRepository;
         }
+        public async Task<CustomResponseDto<List<CategoryWithSubCount>>> GetSubCategoriesWithIdAsync(int id)
+        {
+            var SubCategories = await _categoryRepository.GetSubCategoriesWithIdAsync(id);
+            var categoryWithSubCountDto = _mapper.Map<List<CategoryWithSubCount>>(SubCategories.ToList());
+            foreach (var item in categoryWithSubCountDto)
+            {
+                item.SubCount = _categoryRepository.Where(x => x.SubId == item.Id && x.Id != x.SubId).ToList().Count();
+            }
+            return CustomResponseDto<List<CategoryWithSubCount>>.Success(200, categoryWithSubCountDto);
+        }
+
+        public async Task<CustomResponseDto<List<CategoryWithSubCount>>> GetUnDeletedCategoriesAsync()
+        {
+            var mainCategory = await _categoryRepository.GetAllMainCategoryAsync();
+            var categoryWithSubCountDto = _mapper.Map<List<CategoryWithSubCount>>(mainCategory.ToList());
+            foreach(var item in categoryWithSubCountDto)
+            {
+                item.SubCount = _categoryRepository.Where(x=>x.SubId == item.Id && x.Id != x.SubId).ToList().Count();
+            }
+            return CustomResponseDto<List<CategoryWithSubCount>>.Success(200, categoryWithSubCountDto);
+        }
 
         public async Task<CustomResponseDto<List<CategoryWithSubsDto>>> GetCategoryWithSubAsync()
         {
@@ -64,5 +85,7 @@ namespace NLayer.Service.Services
 
             return CustomResponseDto<CategoryWithProductsDto>.Success(200, categoryDto);
         }
+
+        
     }
 }

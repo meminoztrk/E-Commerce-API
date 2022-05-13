@@ -73,11 +73,26 @@ namespace NLayer.Service.Services
         {
             _repository.Update(entity);
             await _unitOfWork.CommitAsync();
-        }
+        }    
 
         public IQueryable<T> Where(Expression<Func<T, bool>> expression)
         {
             return _repository.Where(expression);
+        }
+
+        public async Task UpdateIsActiveAsync(int id, bool IsActive)
+        {
+            var hasProduct = await _repository.GetByIdAsync(id);
+            hasProduct.GetType().GetProperty("IsActive").SetValue(hasProduct, IsActive, null);
+            _repository.Update(hasProduct);
+            await _unitOfWork.CommitAsync();
+        }
+        public async Task UpdateIsDeletedAsync(int id, bool IsDeleted)
+        {
+            var hasProduct = await _repository.GetByIdAsync(id);
+            hasProduct.GetType().GetProperty("IsDeleted").SetValue(hasProduct, IsDeleted, null);
+            _repository.Update(hasProduct);
+            await _unitOfWork.CommitAsync();
         }
     }
 }

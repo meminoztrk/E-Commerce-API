@@ -114,5 +114,15 @@ namespace NLayer.Caching
         {
             _memoryCache.Set(CacheProductKey, await _repository.GetAll().ToListAsync());
         }
+
+        public Task UpdateIsActiveAsync(int id, bool IsActive)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdateIsDeletedAsync(int id, bool IsDeleted)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

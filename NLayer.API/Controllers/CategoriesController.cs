@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NLayer.API.Filters;
 using NLayer.Core;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.CategoryDTOs;
 using NLayer.Core.Services;
 
 namespace NLayer.API.Controllers
@@ -18,6 +19,35 @@ namespace NLayer.API.Controllers
             _categoryService = categoryService;
             _mapper = mapper;
         }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetCategories()
+        {
+            return CreateActionResult(await _categoryService.GetUnDeletedCategoriesAsync());
+        }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetSubCategoriesWithId(int id)
+        {
+            return CreateActionResult(await _categoryService.GetSubCategoriesWithIdAsync(id));
+        }
+
+
+        [HttpPut("[action]")]
+        public async Task<IActionResult> UpdateIsActive(UpdateActiveDto u)
+        {
+            await _categoryService.UpdateIsActiveAsync(u.Id, u.IsActive);
+
+            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
+        }
+
+        [HttpPut("[action]")]
+        public async Task<IActionResult> UpdateIsDeleted(UpdateDeletedDto d)
+        {
+            await _categoryService.UpdateIsDeletedAsync(d.Id, d.IsDeleted);
+
+            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
+        }
+
         [HttpGet("[action]")]
         public async Task<IActionResult> GetCategoryWithSub()
         {
@@ -56,12 +86,19 @@ namespace NLayer.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save(CategoryDto categoryDto)
+        public async Task<IActionResult> Save(CategoryPostDto categoryPostDto)
         {
-            var category = await _categoryService.AddAsync(_mapper.Map<Category>(categoryDto));
-            var categoryDtos = _mapper.Map<CategoryDto>(category);
+            var category = await _categoryService.AddAsync(_mapper.Map<Category>(categoryPostDto));
 
-            return CreateActionResult(CustomResponseDto<CategoryDto>.Success(201, categoryDtos));
+            var lastCategory = await _categoryService.GetByIdAsync(category.Id);
+            if(categoryPostDto.SubId == 0)
+            {
+                lastCategory.SubId = lastCategory.Id;
+                await _categoryService.UpdateAsync(lastCategory);
+            }
+            var categoryDtos = _mapper.Map<CategoryPostDto>(lastCategory);
+
+            return CreateActionResult(CustomResponseDto<CategoryPostDto>.Success(201, categoryDtos));
         }
 
         [HttpPut]

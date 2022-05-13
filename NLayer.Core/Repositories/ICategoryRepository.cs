@@ -8,6 +8,7 @@ namespace NLayer.Core.Repositories
 {
     public interface ICategoryRepository:IGenericRepository<Category>
     {
+        Task<List<Category>> GetSubCategoriesWithIdAsync(int id);
         Task<Category> GetSingleCategoryByIdWithProductsAsync(int id);
         Task<List<Category>> GetAllMainCategoryAsync();
         Task<List<Category>> GetCategoryWithSubAsync();

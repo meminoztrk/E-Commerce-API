@@ -16,6 +16,8 @@ namespace NLayer.Core.Services
         Task<T> AddAsync(T entity);
         Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entity);
         Task UpdateAsync(T entity);
+        Task UpdateIsActiveAsync(int id, bool IsActive);
+        Task UpdateIsDeletedAsync(int id, bool IsDeleted);
         Task RemoveAsync(T entity);
         Task RemoveRangeAsync(IEnumerable<T> entity);
     }

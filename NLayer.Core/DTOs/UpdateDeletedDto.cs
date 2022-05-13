@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace NLayer.Core.DTOs
 {
-    public class CategoryUpdateDto
+    public class UpdateDeletedDto
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
