@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -15,9 +16,8 @@ namespace NLayer.Core.Services
         Task<bool> AnyAsync(Expression<Func<T, bool>> expression);
         Task<T> AddAsync(T entity);
         Task<IEnumerable<T>> AddRangeAsync(IEnumerable<T> entity);
+        Task UpdatePatchAsync(int id, JsonPatchDocument entity);
         Task UpdateAsync(T entity);
-        Task UpdateIsActiveAsync(int id, bool IsActive);
-        Task UpdateIsDeletedAsync(int id, bool IsDeleted);
         Task RemoveAsync(T entity);
         Task RemoveRangeAsync(IEnumerable<T> entity);
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore;
 using NLayer.Core;
 using NLayer.Core.Repositories;
 using System;
@@ -32,7 +33,6 @@ namespace NLayer.Repository.Repositories
         {
             return await _context.Categories.Include(x=>x.Products).Where(x=>x.Id == categoryId && x.IsDeleted == false).SingleOrDefaultAsync();
         }
-
-        
+  
     }
 }

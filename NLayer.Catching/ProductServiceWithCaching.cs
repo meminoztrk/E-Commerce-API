@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using NLayer.Core;
@@ -121,6 +122,11 @@ namespace NLayer.Caching
         }
 
         public Task UpdateIsDeletedAsync(int id, bool IsDeleted)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task UpdatePatchAsync(int id, JsonPatchDocument entity)
         {
             throw new NotImplementedException();
         }

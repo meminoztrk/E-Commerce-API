@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.EntityFrameworkCore;
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
 using NLayer.Core.UnitOfWorks;
@@ -80,18 +81,10 @@ namespace NLayer.Service.Services
             return _repository.Where(expression);
         }
 
-        public async Task UpdateIsActiveAsync(int id, bool IsActive)
+        public async Task UpdatePatchAsync(int id, JsonPatchDocument entity)
         {
-            var hasProduct = await _repository.GetByIdAsync(id);
-            hasProduct.GetType().GetProperty("IsActive").SetValue(hasProduct, IsActive, null);
-            _repository.Update(hasProduct);
-            await _unitOfWork.CommitAsync();
-        }
-        public async Task UpdateIsDeletedAsync(int id, bool IsDeleted)
-        {
-            var hasProduct = await _repository.GetByIdAsync(id);
-            hasProduct.GetType().GetProperty("IsDeleted").SetValue(hasProduct, IsDeleted, null);
-            _repository.Update(hasProduct);
+            var data = await _repository.GetByIdAsync(id);
+            entity.ApplyTo(data);
             await _unitOfWork.CommitAsync();
         }
     }

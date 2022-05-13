@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NLayer.API.Filters;
 using NLayer.Core;
@@ -20,6 +21,13 @@ namespace NLayer.API.Controllers
             _mapper = mapper;
         }
 
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> UpdatePatch(int id, JsonPatchDocument category)
+        {
+            await _categoryService.UpdatePatchAsync(id,category);
+            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
+        }
+
         [HttpGet("[action]")]
         public async Task<IActionResult> GetCategories()
         {
@@ -29,23 +37,6 @@ namespace NLayer.API.Controllers
         public async Task<IActionResult> GetSubCategoriesWithId(int id)
         {
             return CreateActionResult(await _categoryService.GetSubCategoriesWithIdAsync(id));
-        }
-
-
-        [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateIsActive(UpdateActiveDto u)
-        {
-            await _categoryService.UpdateIsActiveAsync(u.Id, u.IsActive);
-
-            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
-        }
-
-        [HttpPut("[action]")]
-        public async Task<IActionResult> UpdateIsDeleted(UpdateDeletedDto d)
-        {
-            await _categoryService.UpdateIsDeletedAsync(d.Id, d.IsDeleted);
-
-            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
         }
 
         [HttpGet("[action]")]
