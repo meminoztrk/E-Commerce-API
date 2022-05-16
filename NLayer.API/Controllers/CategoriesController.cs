@@ -22,6 +22,7 @@ namespace NLayer.API.Controllers
         }
 
         [HttpPatch("{id}")]
+
         public async Task<IActionResult> UpdatePatch(int id, JsonPatchDocument category)
         {
             await _categoryService.UpdatePatchAsync(id,category);
