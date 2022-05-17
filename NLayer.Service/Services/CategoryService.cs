@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NLayer.Core;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.CategoryDTOs;
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
 using NLayer.Core.UnitOfWorks;
@@ -20,6 +21,23 @@ namespace NLayer.Service.Services
         {
             _mapper = mapper;
             _categoryRepository = categoryRepository;
+        }
+        public async Task<CustomResponseDto<List<CategoryWithName>>> GetNavCategories(int id)
+        {
+            List<Category> nav = new List<Category>();
+            while (true)
+            {
+                var Category =  _categoryRepository.Where(x => x.Id == id).FirstOrDefault();
+                id=Category.SubId;
+                nav.Add(Category);
+                if(Category.Id == Category.SubId)
+                {
+                    break;
+                } 
+            }
+
+            var categoryNav = _mapper.Map<List<CategoryWithName>>(nav.OrderBy(x=>x.Id).ToList());
+            return CustomResponseDto<List<CategoryWithName>>.Success(200, categoryNav);
         }
         public async Task<CustomResponseDto<List<CategoryWithSubCount>>> GetSubCategoriesWithIdAsync(int id)
         {

@@ -26,6 +26,7 @@ namespace NLayer.Service.Mapping
             CreateMap<CategoryPostDto,Category>().ReverseMap();
             CreateMap<Category, CategoryWithProductsDto>();
             CreateMap<Category, CategoryWithSubCount>();
+            CreateMap<Category, CategoryWithName>();
             CreateMap<User, UserRegisterDto>().ReverseMap();
             CreateMap<User, UserDto>().ReverseMap();
 

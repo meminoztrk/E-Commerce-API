@@ -21,6 +21,12 @@ namespace NLayer.API.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetNavCategories(int id)
+        {
+            return CreateActionResult(await _categoryService.GetNavCategories(id));
+        }
+
         [HttpPatch("{id}")]
 
         public async Task<IActionResult> UpdatePatch(int id, JsonPatchDocument category)

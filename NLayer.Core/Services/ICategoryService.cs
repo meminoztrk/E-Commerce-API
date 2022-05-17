@@ -1,4 +1,5 @@
 ﻿using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.CategoryDTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace NLayer.Core.Services
 {
     public interface ICategoryService:IService<Category>
     {
+        Task<CustomResponseDto<List<CategoryWithName>>> GetNavCategories(int id);
         Task<CustomResponseDto<List<CategoryWithSubCount>>> GetSubCategoriesWithIdAsync(int id);
         Task<CustomResponseDto<List<CategoryWithSubCount>>> GetUnDeletedCategoriesAsync();
         Task<CustomResponseDto<CategoryWithProductsDto>> GetSingleCategoryByIdWithProductsAsync(int categoryId);
