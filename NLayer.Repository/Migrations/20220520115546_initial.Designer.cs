@@ -12,8 +12,8 @@ using NLayer.Repository;
 namespace NLayer.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220512061806_initial2")]
-    partial class initial2
+    [Migration("20220520115546_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -131,6 +131,105 @@ namespace NLayer.Repository.Migrations
                         });
                 });
 
+            modelBuilder.Entity("NLayer.Core.Models.Brand", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Brands");
+                });
+
+            modelBuilder.Entity("NLayer.Core.Models.CategoryFeature", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("CategoryFeatures");
+                });
+
+            modelBuilder.Entity("NLayer.Core.Models.FeatureDetail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("CategoryFeatureId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryFeatureId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("FeatureDetails");
+                });
+
             modelBuilder.Entity("NLayer.Core.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -185,7 +284,10 @@ namespace NLayer.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("BrandId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreatedDate")
@@ -213,6 +315,8 @@ namespace NLayer.Repository.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BrandId");
+
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products", (string)null);
@@ -222,7 +326,7 @@ namespace NLayer.Repository.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreatedDate = new DateTime(2022, 5, 12, 9, 18, 6, 27, DateTimeKind.Local).AddTicks(8826),
+                            CreatedDate = new DateTime(2022, 5, 20, 14, 55, 46, 608, DateTimeKind.Local).AddTicks(7596),
                             IsActive = false,
                             IsDeleted = false,
                             Name = "Kalem 1",
@@ -233,7 +337,7 @@ namespace NLayer.Repository.Migrations
                         {
                             Id = 2,
                             CategoryId = 1,
-                            CreatedDate = new DateTime(2022, 5, 12, 9, 18, 6, 27, DateTimeKind.Local).AddTicks(8832),
+                            CreatedDate = new DateTime(2022, 5, 20, 14, 55, 46, 608, DateTimeKind.Local).AddTicks(7603),
                             IsActive = false,
                             IsDeleted = false,
                             Name = "Kalem 2",
@@ -244,7 +348,7 @@ namespace NLayer.Repository.Migrations
                         {
                             Id = 3,
                             CategoryId = 2,
-                            CreatedDate = new DateTime(2022, 5, 12, 9, 18, 6, 27, DateTimeKind.Local).AddTicks(8833),
+                            CreatedDate = new DateTime(2022, 5, 20, 14, 55, 46, 608, DateTimeKind.Local).AddTicks(7604),
                             IsActive = false,
                             IsDeleted = false,
                             Name = "Kitap 1",
@@ -264,45 +368,29 @@ namespace NLayer.Repository.Migrations
                     b.Property<string>("Color")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Height")
-                        .HasColumnType("int");
+                    b.Property<decimal>("FePrice")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Width")
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Stock")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProductId")
-                        .IsUnique();
+                    b.HasIndex("ProductId");
 
                     b.ToTable("ProductFeatures", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Color = "Kırmızı",
-                            Height = 20,
-                            ProductId = 2,
-                            Width = 20
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Color = "Siyah",
-                            Height = 30,
-                            ProductId = 1,
-                            Width = 30
-                        });
                 });
 
-            modelBuilder.Entity("NLayer.Core.Product", b =>
+            modelBuilder.Entity("NLayer.Core.Models.CategoryFeature", b =>
                 {
                     b.HasOne("NLayer.Core.Category", "Category")
-                        .WithMany("Products")
+                        .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -310,11 +398,41 @@ namespace NLayer.Repository.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("NLayer.Core.Models.FeatureDetail", b =>
+                {
+                    b.HasOne("NLayer.Core.Models.CategoryFeature", "CategoryFeature")
+                        .WithMany("FeatureDetails")
+                        .HasForeignKey("CategoryFeatureId");
+
+                    b.HasOne("NLayer.Core.Product", "Product")
+                        .WithMany("FeatureDetails")
+                        .HasForeignKey("ProductId");
+
+                    b.Navigation("CategoryFeature");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("NLayer.Core.Product", b =>
+                {
+                    b.HasOne("NLayer.Core.Models.Brand", "Brand")
+                        .WithMany("Products")
+                        .HasForeignKey("BrandId");
+
+                    b.HasOne("NLayer.Core.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("Brand");
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("NLayer.Core.ProductFeature", b =>
                 {
                     b.HasOne("NLayer.Core.Product", "Product")
-                        .WithOne("ProductFeature")
-                        .HasForeignKey("NLayer.Core.ProductFeature", "ProductId")
+                        .WithMany("ProductFeatures")
+                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -326,9 +444,21 @@ namespace NLayer.Repository.Migrations
                     b.Navigation("Products");
                 });
 
+            modelBuilder.Entity("NLayer.Core.Models.Brand", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("NLayer.Core.Models.CategoryFeature", b =>
+                {
+                    b.Navigation("FeatureDetails");
+                });
+
             modelBuilder.Entity("NLayer.Core.Product", b =>
                 {
-                    b.Navigation("ProductFeature");
+                    b.Navigation("FeatureDetails");
+
+                    b.Navigation("ProductFeatures");
                 });
 #pragma warning restore 612, 618
         }

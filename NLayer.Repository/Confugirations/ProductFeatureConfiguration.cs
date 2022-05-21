@@ -15,11 +15,12 @@ namespace NLayer.Repository.Confugirations
         {
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Id).UseIdentityColumn();
+            builder.Property(x => x.FePrice).IsRequired().HasColumnType("decimal(18,2)");
 
 
             builder.ToTable("ProductFeatures");
 
-            builder.HasOne(x => x.Product).WithOne(x => x.ProductFeature).HasForeignKey<ProductFeature>(x => x.ProductId);
+            builder.HasOne(x => x.Product).WithMany(x => x.ProductFeatures).HasForeignKey(x => x.ProductId);
         }
     }
 }

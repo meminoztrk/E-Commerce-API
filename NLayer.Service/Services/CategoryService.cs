@@ -45,7 +45,7 @@ namespace NLayer.Service.Services
             var categoryWithSubCountDto = _mapper.Map<List<CategoryWithSubCount>>(SubCategories.ToList());
             foreach (var item in categoryWithSubCountDto)
             {
-                item.SubCount = _categoryRepository.Where(x => x.SubId == item.Id && x.Id != x.SubId).ToList().Count();
+                item.SubCount = _categoryRepository.Where(x => x.SubId == item.Id && x.Id != x.SubId && x.IsDeleted == false).ToList().Count();
             }
             return CustomResponseDto<List<CategoryWithSubCount>>.Success(200, categoryWithSubCountDto);
         }
@@ -67,7 +67,7 @@ namespace NLayer.Service.Services
             var subCategories = await _categoryRepository.GetCategoryWithSubAsync();
 
             List<CategoryWithSubsDto> subs = new List<CategoryWithSubsDto>();
-            foreach (var mainCategory in mainCategories)
+            foreach (var mainCategory in mainCategories.Where(x=>x.IsActive == true))
             {
                 List<CategoryDtoWithSubDto> subCats = new List<CategoryDtoWithSubDto>();
                 var selectedSubCategories = subCategories.Where(x => x.SubId == mainCategory.Id).ToList();

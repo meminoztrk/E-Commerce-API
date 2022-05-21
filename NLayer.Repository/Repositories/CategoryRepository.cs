@@ -17,12 +17,12 @@ namespace NLayer.Repository.Repositories
         }
         public async Task<List<Category>> GetSubCategoriesWithIdAsync(int id)
         {
-            return await _context.Categories.Where(x => x.SubId == id && x.Id != x.SubId).ToListAsync();
+            return await _context.Categories.Where(x => x.SubId == id && x.Id != x.SubId && x.IsDeleted == false).ToListAsync();
         }
 
         public async Task<List<Category>> GetCategoryWithSubAsync()
         {
-            return await _context.Categories.Where(x => x.Id != x.SubId && x.IsDeleted == false).ToListAsync();
+            return await _context.Categories.Where(x => x.Id != x.SubId && x.IsActive == true && x.IsDeleted == false).ToListAsync();
         }
         public async Task<List<Category>> GetAllMainCategoryAsync()
         {

@@ -13,8 +13,8 @@ namespace NLayer.Repository.Seeds
     {
         public void Configure(EntityTypeBuilder<ProductFeature> builder)
         {
-            builder.HasData(new ProductFeature { Id = 1, ProductId = 2, Color = "Kırmızı", Height = 20, Width = 20 },
-                            new ProductFeature { Id = 2, ProductId = 1, Color = "Siyah", Height = 30, Width = 30 });
+            //builder.HasData(new ProductFeature { Id = 1, ProductId = 2, Color = "Kırmızı", Height = 20, Width = 20 },
+            //                new ProductFeature { Id = 2, ProductId = 1, Color = "Siyah", Height = 30, Width = 30 });
         }
     }
 }
