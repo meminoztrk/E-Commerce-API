@@ -40,6 +40,9 @@ namespace NLayer.Service.Mapping
             CreateMap<Brand, BrandUpdateDto>().ReverseMap();
 
             CreateMap<CategoryFeature, CategoryFeatureDto>();
+            CreateMap<CategoryFeature, CategoryFeatureDto>().ReverseMap();
+            CreateMap<CategoryFeature, CategoryFeaturePostDto>();
+            CreateMap<CategoryFeature, CategoryFeaturePostDto>().ReverseMap();
 
         }
     }

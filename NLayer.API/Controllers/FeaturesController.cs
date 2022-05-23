@@ -52,9 +52,9 @@ namespace NLayer.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Save(CategoryFeatureDto CategoryFeatureDto)
+        public async Task<IActionResult> Save(CategoryFeaturePostDto CategoryFeaturePostDto)
         {
-            var CategoryFeature = await _featureService.AddAsync(_mapper.Map<CategoryFeature>(CategoryFeatureDto));
+            var CategoryFeature = await _featureService.AddAsync(_mapper.Map<CategoryFeature>(CategoryFeaturePostDto));
 
             var CategoryFeatureDtos = _mapper.Map<CategoryFeatureDto>(CategoryFeature);
 
