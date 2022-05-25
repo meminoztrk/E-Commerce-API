@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using NLayer.Core;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.ProductDTOs;
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
 using NLayer.Core.UnitOfWorks;
@@ -127,6 +128,11 @@ namespace NLayer.Caching
         }
 
         public Task UpdatePatchAsync(int id, JsonPatchDocument entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CustomResponseDto<List<ProductCatChildDto>>> GetCategoryWithChild()
         {
             throw new NotImplementedException();
         }

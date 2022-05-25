@@ -18,6 +18,12 @@ namespace NLayer.API.Controllers
             _mapper = mapper;
             _productService = productService;
         }
+        
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetCategoryWithChild()
+        {
+            return CreateActionResult(await _productService.GetCategoryWithChild());
+        }
 
         [HttpGet("[action]")]
         public async Task<IActionResult> GetProductWithCategory()
