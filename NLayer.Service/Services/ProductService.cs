@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using NLayer.Core;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.FeatureDTOs;
 using NLayer.Core.DTOs.ProductDTOs;
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
@@ -56,6 +57,15 @@ namespace NLayer.Service.Services
             var productDto =  _mapper.Map<List<ProductWithCategoryDto>>(product);
 
             return CustomResponseDto<List<ProductWithCategoryDto>>.Success(200, productDto);
+        }
+
+        public async Task<CustomResponseDto<List<CategoryFeatureWithNameDto>>> GetCategoryFeaturesByCategoryId(int id)
+        {
+            var features = await _productRepository.GetCategoryFeaturesByCategoryId(id);
+
+            var featureDto = _mapper.Map<List<CategoryFeatureWithNameDto>>(features);
+
+            return CustomResponseDto<List<CategoryFeatureWithNameDto>>.Success(200, featureDto);
         }
     }
 }

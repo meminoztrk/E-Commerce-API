@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using NLayer.API.Filters;
 using NLayer.Core;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.ProductDTOs;
 using NLayer.Core.Services;
 
 namespace NLayer.API.Controllers
@@ -18,7 +19,19 @@ namespace NLayer.API.Controllers
             _mapper = mapper;
             _productService = productService;
         }
-        
+
+        [HttpPost("[action]")]
+        public IActionResult SaveProduct([FromForm]ProductPostDto test)
+        {
+            return Ok();
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetCategoryFeaturesByCategoryId(int id)
+        {
+            return CreateActionResult(await _productService.GetCategoryFeaturesByCategoryId(id));
+        }
+
         [HttpGet("[action]")]
         public async Task<IActionResult> GetCategoryWithChild()
         {

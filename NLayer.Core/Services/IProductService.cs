@@ -1,4 +1,5 @@
 ﻿using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.FeatureDTOs;
 using NLayer.Core.DTOs.ProductDTOs;
 using System;
 using System.Collections.Generic;
@@ -12,5 +13,6 @@ namespace NLayer.Core.Services
     {
         Task<CustomResponseDto<List<ProductWithCategoryDto>>> GetProductWithCategory();
         Task<CustomResponseDto<List<ProductCatChildDto>>> GetCategoryWithChild();
+        Task<CustomResponseDto<List<CategoryFeatureWithNameDto>>> GetCategoryFeaturesByCategoryId(int id);
     }
 }

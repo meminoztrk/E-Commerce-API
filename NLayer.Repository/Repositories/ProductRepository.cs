@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NLayer.Core;
+using NLayer.Core.Models;
 using NLayer.Core.Repositories;
 using System;
 using System.Collections.Generic;
@@ -13,6 +14,11 @@ namespace NLayer.Repository.Repositories
     {
         public ProductRepository(AppDbContext context) : base(context)
         {
+        }
+
+        public async Task<List<CategoryFeature>> GetCategoryFeaturesByCategoryId(int id)
+        {
+            return await _context.CategoryFeatures.Where(x=>x.CategoryId == id && x.IsActive == true && x.IsDeleted == false).ToListAsync();
         }
 
         public async Task<List<Product>> GetProductWithCategory()

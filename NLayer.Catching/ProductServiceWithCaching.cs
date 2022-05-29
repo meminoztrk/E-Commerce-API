@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using NLayer.Core;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.FeatureDTOs;
 using NLayer.Core.DTOs.ProductDTOs;
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
@@ -133,6 +134,11 @@ namespace NLayer.Caching
         }
 
         public Task<CustomResponseDto<List<ProductCatChildDto>>> GetCategoryWithChild()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<CustomResponseDto<List<CategoryFeatureWithNameDto>>> GetCategoryFeaturesByCategoryId(int id)
         {
             throw new NotImplementedException();
         }

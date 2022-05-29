@@ -43,6 +43,7 @@ namespace NLayer.Service.Mapping
             CreateMap<CategoryFeature, CategoryFeatureDto>().ReverseMap();
             CreateMap<CategoryFeature, CategoryFeaturePostDto>();
             CreateMap<CategoryFeature, CategoryFeaturePostDto>().ReverseMap();
+            CreateMap<CategoryFeature, CategoryFeatureWithNameDto>();
 
         }
     }

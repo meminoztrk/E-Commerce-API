@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLayer.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,5 +10,6 @@ namespace NLayer.Core.Repositories
     public interface IProductRepository : IGenericRepository<Product>
     {
         Task<List<Product>> GetProductWithCategory();
+        Task<List<CategoryFeature>> GetCategoryFeaturesByCategoryId(int id);
     }
 }
