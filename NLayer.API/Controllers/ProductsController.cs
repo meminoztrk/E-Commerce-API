@@ -21,9 +21,9 @@ namespace NLayer.API.Controllers
         }
 
         [HttpPost("[action]")]
-        public IActionResult SaveProduct([FromForm]ProductPostDto test)
+        public async Task<IActionResult> SaveProduct([FromForm]ProductPostDto product)
         {
-            return Ok();
+            return CreateActionResult(await _productService.SaveProduct(product));
         }
 
         [HttpGet("[action]")]

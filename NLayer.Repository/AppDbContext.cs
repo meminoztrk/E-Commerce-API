@@ -23,6 +23,7 @@ namespace NLayer.Repository
         public DbSet<FeatureDetail> FeatureDetails { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<ProductFeature> ProductFeatures { get; set; }
         public DbSet<User> Users { get; set; }
 

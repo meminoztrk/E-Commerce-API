@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using NLayer.Core;
 using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.FeatureDTOs;
 using NLayer.Core.DTOs.ProductDTOs;
+using NLayer.Core.Models;
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
 using NLayer.Core.UnitOfWorks;
@@ -18,12 +20,22 @@ namespace NLayer.Service.Services
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IProductFeatureService _productFeatureService;
+        private readonly IFeatureDetailService _featureDetailService;
+        private readonly IProductImageService _productImageService;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductService(IGenericRepository<Product> repository, IUnitOfWork unitOfWork, IProductRepository productRepository, ICategoryRepository categoryRepository, IMapper mapper) : base(repository, unitOfWork)
+        public ProductService(IGenericRepository<Product> repository, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork,
+                                                 IProductRepository productRepository, IProductFeatureService productFeatureService, IFeatureDetailService featureDetailService, IProductImageService productImageService,
+                                                 IWebHostEnvironment webHostEnvironment, IMapper mapper) : base(repository, unitOfWork)
         {
             _productRepository = productRepository;
+            _productFeatureService = productFeatureService;
+            _featureDetailService = featureDetailService;
             _categoryRepository = categoryRepository;
+            _productImageService = productImageService;
+            _webHostEnvironment = webHostEnvironment;
             _mapper = mapper;
         }
 
@@ -66,6 +78,78 @@ namespace NLayer.Service.Services
             var featureDto = _mapper.Map<List<CategoryFeatureWithNameDto>>(features);
 
             return CustomResponseDto<List<CategoryFeatureWithNameDto>>.Success(200, featureDto);
+        }
+
+        public async Task<CustomResponseDto<NoContentDto>> SaveProduct(ProductPostDto product)
+        {
+            Product sproduct = new Product();
+            sproduct.CategoryId = product.CategoryId;
+            sproduct.BrandId = product.BrandId;
+            sproduct.Name = product.Name;
+            sproduct.Description = product.Explain;
+            sproduct.CreatedDate = DateTime.Now;
+            sproduct.IsActive = product.IsActive;
+            foreach (var item in product.ProductFeatures)
+            {
+                sproduct.Stock += item.Stock;
+            }
+
+            await AddAsync(sproduct);
+
+            List<ProductFeature> productFeatures = new List<ProductFeature>();
+            foreach (var item in product.ProductFeatures)
+            {
+                productFeatures.Add(new ProductFeature()
+                {
+                    ProductId = sproduct.Id,
+                    Color = item.Color,
+                    Stock = item.Stock,
+                    FePrice = item.FePrice,
+                    Status = item.Status == "0" ? "Sıfır" : "İkinci El",
+                });
+            }
+
+            
+            await _productFeatureService.AddRangeAsync(productFeatures);
+
+            List<FeatureDetail> featureDetails = new List<FeatureDetail>();
+            foreach (var item in product.CategoryFeatures)
+            {
+                featureDetails.Add(new FeatureDetail()
+                {
+                    CategoryFeatureId = item.CategoryFeatureId,
+                    ProductId = sproduct.Id,
+                    Value = item.Value,
+                    IsActive = true
+                });
+            }
+
+            await _featureDetailService.AddRangeAsync(featureDetails);
+
+            List<ProductImage> productImages = new List<ProductImage>();
+            foreach (var item in product.Pictures)
+            {
+                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                string fileName = Path.GetFileNameWithoutExtension(item.FileName);
+                string extensions = Path.GetExtension(item.FileName);
+                string now = DateTime.Now.ToString("yymmssfff");
+                string path = Path.Combine(wwwRootPath + "/img/product/", fileName + now + extensions);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    await item.CopyToAsync(fileStream);
+                }
+
+                productImages.Add(new ProductImage()
+                {
+                    ProductId = sproduct.Id,
+                    Path = fileName + now + extensions,
+                    IsActive = true
+                });
+            }
+
+            await _productImageService.AddRangeAsync(productImages);
+
+            return CustomResponseDto<NoContentDto>.Success(200, "Ürün Eklendi");
         }
     }
 }

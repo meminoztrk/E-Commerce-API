@@ -12,11 +12,13 @@ namespace NLayer.Core
         public string Name { get; set; }
         public int Stock { get; set; }
         public decimal Price { get; set; }
+        public string Description { get; set; }
         public int? CategoryId { get; set; }
         public Category Category { get; set; }
         public int? BrandId { get; set; }
         public Brand Brand { get; set; }
         public ICollection<ProductFeature> ProductFeatures { get; set; }
+        public ICollection<ProductImage> ProductImages { get; set; }
         public ICollection<FeatureDetail> FeatureDetails { get; set; }
     }
 }

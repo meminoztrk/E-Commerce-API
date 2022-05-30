@@ -13,6 +13,7 @@ namespace NLayer.Core.DTOs.ProductDTOs
         public int CategoryId { get; set; }
         public string Name { get; set; }
         public string Explain { get; set; }
+        public bool IsActive { get; set; }  
         public List<IFormFile> Pictures { get; set; }
         public List<ProductFeatureDto> ProductFeatures { get; set; }
         public List<ProductFeatureDetailDto> CategoryFeatures { get; set; }
