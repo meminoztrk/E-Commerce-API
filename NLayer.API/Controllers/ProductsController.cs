@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NLayer.API.Filters;
 using NLayer.Core;
@@ -18,6 +19,18 @@ namespace NLayer.API.Controllers
         {
             _mapper = mapper;
             _productService = productService;
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetProduct(int id)
+        {
+            return CreateActionResult(await _productService.GetProduct(id));
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetUndeletedProducts()
+        {
+            return CreateActionResult(await _productService.GetUndeletedProductAsync());
         }
 
         [HttpPost("[action]")]
@@ -83,6 +96,14 @@ namespace NLayer.API.Controllers
         {
             await _productService.UpdateAsync(_mapper.Map<Product>(productDto));
 
+            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
+        }
+
+        [HttpPatch("{id}")]
+
+        public async Task<IActionResult> UpdatePatch(int id, JsonPatchDocument product)
+        {
+            await _productService.UpdatePatchAsync(id, product);
             return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
         }
 

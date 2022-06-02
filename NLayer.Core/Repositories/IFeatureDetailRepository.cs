@@ -9,5 +9,6 @@ namespace NLayer.Core.Repositories
 {
     public interface IFeatureDetailRepository:IGenericRepository<FeatureDetail>
     {
+        Task<List<FeatureDetail>> GetDetailWithFeatureNameByProductId(int id);
     }
 }

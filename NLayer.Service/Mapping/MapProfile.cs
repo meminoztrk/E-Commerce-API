@@ -4,6 +4,7 @@ using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.BrandDTOs;
 using NLayer.Core.DTOs.CategoryDTOs;
 using NLayer.Core.DTOs.FeatureDTOs;
+using NLayer.Core.DTOs.ProductDTOs;
 using NLayer.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,8 @@ namespace NLayer.Service.Mapping
             CreateMap<Product,ProductDto>().ReverseMap();
             CreateMap<ProductUpdateDto, Product>();
             CreateMap<Product, ProductWithCategoryDto>();
+            CreateMap<Product, ProductListDto>();
+            CreateMap<Product, ProductListDto>().ReverseMap();
             CreateMap<ProductFeature,ProductFeature>().ReverseMap();
 
             CreateMap<Category,CategoryDto>().ReverseMap();
@@ -38,6 +41,7 @@ namespace NLayer.Service.Mapping
             CreateMap<Brand, BrandDto>().ReverseMap();
             CreateMap<Brand, BrandUpdateDto>();
             CreateMap<Brand, BrandUpdateDto>().ReverseMap();
+            CreateMap<Brand, BrandNameDto>();
 
             CreateMap<CategoryFeature, CategoryFeatureDto>();
             CreateMap<CategoryFeature, CategoryFeatureDto>().ReverseMap();

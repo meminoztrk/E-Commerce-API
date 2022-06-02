@@ -25,5 +25,9 @@ namespace NLayer.Repository.Repositories
         {
             return await _context.Products.Include(x=> x.Category).ToListAsync();
         }
+        public async Task<List<Product>> GetUndeletedProductAsync()
+        {
+            return await _context.Products.Include(x => x.Category).Include(x => x.Brand).Where(x => x.IsDeleted == false).ToListAsync();
+        }
     }
 }
