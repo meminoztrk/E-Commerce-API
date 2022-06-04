@@ -11,7 +11,7 @@ namespace NLayer.Core
         public string Color { get; set; }
         public int Stock { get; set; }
         public decimal FePrice { get; set; }
-        public string Status { get; set; }
+        public bool Status { get; set; }
         public int ProductId { get; set; }
         public Product Product { get; set; }
     }

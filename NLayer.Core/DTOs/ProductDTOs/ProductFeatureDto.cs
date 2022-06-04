@@ -8,7 +8,7 @@ namespace NLayer.Core.DTOs
 {
     public class ProductFeatureDto
     {
-        public string Status { get; set; }
+        public bool Status { get; set; }
         public string Color { get; set; }
         public int Stock { get; set; }
         public decimal FePrice { get; set; }

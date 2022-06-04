@@ -14,11 +14,21 @@ namespace NLayer.API.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IProductService _productService;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductsController(IMapper mapper, IProductService productService)
+        public ProductsController(IMapper mapper, IProductService productService, IWebHostEnvironment webHostEnvironment)
         {
             _mapper = mapper;
             _productService = productService;
+           _webHostEnvironment = webHostEnvironment;
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult GetImage(string path)
+        {
+            string imagePath = _webHostEnvironment.WebRootPath + "/img/product/" + path;
+            Byte[] image = System.IO.File.ReadAllBytes(imagePath); 
+            return File(image, "image/png");
         }
 
         [HttpGet("[action]")]
@@ -31,6 +41,12 @@ namespace NLayer.API.Controllers
         public async Task<IActionResult> GetUndeletedProducts()
         {
             return CreateActionResult(await _productService.GetUndeletedProductAsync());
+        }
+
+        [HttpPut("[action]")]
+        public async Task<IActionResult> EditProduct(int id,[FromForm] ProductPostDto product)
+        {
+            return CreateActionResult(await _productService.EditProduct(id,product));
         }
 
         [HttpPost("[action]")]

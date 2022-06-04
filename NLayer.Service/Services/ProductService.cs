@@ -110,7 +110,7 @@ namespace NLayer.Service.Services
                     Color = item.Color,
                     Stock = item.Stock,
                     FePrice = item.FePrice,
-                    Status = item.Status == "0" ? "Sıfır" : "İkinci El",
+                    Status = item.Status,
                 });
             }
 
@@ -156,7 +156,98 @@ namespace NLayer.Service.Services
 
             return CustomResponseDto<NoContentDto>.Success(200, "Ürün Eklendi");
         }
+        public async Task<CustomResponseDto<NoContentDto>> EditProduct(int id, ProductPostDto product)
+        {
+            var editProduct = await _productRepository.GetByIdAsync(id);
+            if(editProduct != null)
+            {
+                editProduct.BrandId = product.BrandId;
+                editProduct.CategoryId = product.CategoryId;
+                editProduct.Name = product.Name;
+                editProduct.Description = product.Explain;
+                editProduct.IsActive = product.IsActive;
+                await UpdateAsync(editProduct);
 
+                #region Product Features
+                var productFeatures = _productFeatureService.Where(x => x.ProductId == id).ToList();
+                List<ProductFeature> listFeatures = new List<ProductFeature>();
+                foreach (var feature in product.ProductFeatures)
+                {
+                    listFeatures.Add(new ProductFeature()
+                    {
+                        ProductId = editProduct.Id,
+                        Color = feature.Color,
+                        Stock = feature.Stock,
+                        FePrice = feature.FePrice,
+                        Status = feature.Status,
+                    });
+                }
+                await _productFeatureService.AddRangeAsync(listFeatures);
+                await _productFeatureService.RemoveRangeAsync(productFeatures);
+                #endregion
+
+                #region Category Features
+                var categoryFeatures = _featureDetailService.Where(x => x.ProductId == id).ToList();
+                List<FeatureDetail> featureDetails = new List<FeatureDetail>();
+                foreach (var feature in product.CategoryFeatures)
+                {
+                    featureDetails.Add(new FeatureDetail()
+                    {
+                        ProductId = editProduct.Id,
+                        CategoryFeatureId = feature.CategoryFeatureId,
+                        Value = feature.Value,
+                        IsActive = true
+                    });
+                }
+                await _featureDetailService.AddRangeAsync(featureDetails);
+                await _featureDetailService.RemoveRangeAsync(categoryFeatures);
+                #endregion
+
+                #region Product Images
+                var productImages = _productImageService.Where(x => x.ProductId == id).ToList();
+                foreach (var image in productImages)
+                {
+                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\img\\product", image.Path);
+                    if (System.IO.File.Exists(path))
+                    {
+                        System.IO.File.Delete(path);
+                    }
+                }
+                await _productImageService.RemoveRangeAsync(productImages);
+
+                List<ProductImage> protImages = new List<ProductImage>();
+                foreach (var item in product.Pictures)
+                {
+                    string wwwRootPath = _webHostEnvironment.WebRootPath;
+                    string fileName = Path.GetFileNameWithoutExtension(item.FileName);
+                    string extensions = Path.GetExtension(item.FileName);
+                    string now = DateTime.Now.ToString("yymmssfff");
+                    string path = Path.Combine(wwwRootPath + "/img/product/", fileName.Substring(0, 1) + now + extensions);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await item.CopyToAsync(fileStream);
+                    }
+
+                    protImages.Add(new ProductImage()
+                    {
+                        ProductId = editProduct.Id,
+                        Path = fileName.Substring(0, 1) + now + extensions,
+                        IsActive = true
+                    });
+                }
+                await _productImageService.AddRangeAsync(protImages);
+
+                #endregion
+
+
+                return CustomResponseDto<NoContentDto>.Success(200, "Ürün Güncellendi");
+            }
+            else
+            {
+                return CustomResponseDto<NoContentDto>.Fail(404, "Ürün id bulunamadı");
+            }
+            
+        }
         public async Task<CustomResponseDto<List<ProductListDto>>> GetUndeletedProductAsync()
         {
             var products = await _productRepository.GetUndeletedProductAsync();
@@ -209,7 +300,7 @@ namespace NLayer.Service.Services
                 var getDetails = await _featureDetailRepository.GetDetailWithFeatureNameByProductId(id);
                 foreach (var detail in getDetails)
                 {
-                    featureDetails.Add(new ProductFeatureDetailWithNameDto { CategoryFeatureId = detail.Id, Value = detail.Value, Name = detail.CategoryFeature.Name  });
+                    featureDetails.Add(new ProductFeatureDetailWithNameDto { CategoryFeatureId = (int)detail.CategoryFeatureId, Value = detail.Value, Name = detail.CategoryFeature.Name  });
                 }
                 productForEdit.CategoryFeaturesDetails = featureDetails;
                 #endregion
@@ -234,5 +325,6 @@ namespace NLayer.Service.Services
                 return CustomResponseDto<ProductForEditDto>.Fail(404, "Id not found");
             }
         }
+        
     }
 }
