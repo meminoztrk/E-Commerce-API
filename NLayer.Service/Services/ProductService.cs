@@ -9,11 +9,7 @@ using NLayer.Core.Models;
 using NLayer.Core.Repositories;
 using NLayer.Core.Services;
 using NLayer.Core.UnitOfWorks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NLayer.Service.Helper;
 
 namespace NLayer.Service.Services
 {
@@ -54,7 +50,27 @@ namespace NLayer.Service.Services
             }
             return categorySub;
         }
-        
+
+        protected async Task<List<ProductIListDto>> CategorySubLoop(int id)
+        {
+            List<ProductIListDto> products = new List<ProductIListDto>();
+            var subCategories = _categoryRepository.Where(x => x.SubId == id && x.IsActive == true && x.IsDeleted == false).ToList();
+            foreach (var category in subCategories)
+            {
+                if (await _categoryRepository.AnyAsync(x => x.SubId == category.Id && x.IsActive == true && x.IsDeleted == false))
+                {
+                    //sonsuz fonksiyon
+                    products.AddRange(await CategorySubLoop(category.Id));
+                }
+                else
+                {
+                    //ekle
+                    products.AddRange(await _productRepository.GetProductWithFeaturesByCategoryId(category.Id));
+                }
+            }
+            return products;
+        }
+
         public async Task<CustomResponseDto<List<ProductCatChildDto>>> GetCategoryWithChild()
         {
             var mainCategories = await _categoryRepository.GetAllMainCategoryAsync();
@@ -117,45 +133,54 @@ namespace NLayer.Service.Services
             
             await _productFeatureService.AddRangeAsync(productFeatures);
 
+            
             List<FeatureDetail> featureDetails = new List<FeatureDetail>();
-            foreach (var item in product.CategoryFeatures)
+            if(product.CategoryFeatures != null)
             {
-                featureDetails.Add(new FeatureDetail()
+                foreach (var item in product.CategoryFeatures)
                 {
-                    CategoryFeatureId = item.CategoryFeatureId,
-                    ProductId = sproduct.Id,
-                    Value = item.Value,
-                    IsActive = true
-                });
+                    featureDetails.Add(new FeatureDetail()
+                    {
+                        CategoryFeatureId = item.CategoryFeatureId,
+                        ProductId = sproduct.Id,
+                        Value = item.Value,
+                        IsActive = true
+                    });
+                }
+                await _featureDetailService.AddRangeAsync(featureDetails);
             }
-
-            await _featureDetailService.AddRangeAsync(featureDetails);
+            
 
             List<ProductImage> productImages = new List<ProductImage>();
-            foreach (var item in product.Pictures)
+            if(product.Pictures != null)
             {
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
-                string fileName = Path.GetFileNameWithoutExtension(item.FileName);
-                string extensions = Path.GetExtension(item.FileName);
-                string now = DateTime.Now.ToString("yymmssfff");
-                string path = Path.Combine(wwwRootPath + "/img/product/", fileName + now + extensions);
-                using (var fileStream = new FileStream(path, FileMode.Create))
+                foreach (var item in product.Pictures)
                 {
-                    await item.CopyToAsync(fileStream);
+                    string wwwRootPath = _webHostEnvironment.WebRootPath;
+                    string fileName = Path.GetFileNameWithoutExtension(item.FileName);
+                    string extensions = Path.GetExtension(item.FileName);
+                    string now = DateTime.Now.ToString("yymmssfff");
+                    string path = Path.Combine(wwwRootPath + "/img/product/", fileName + now + extensions);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        await item.CopyToAsync(fileStream);
+                    }
+
+                    productImages.Add(new ProductImage()
+                    {
+                        ProductId = sproduct.Id,
+                        Path = fileName + now + extensions,
+                        IsActive = true
+                    });
                 }
 
-                productImages.Add(new ProductImage()
-                {
-                    ProductId = sproduct.Id,
-                    Path = fileName + now + extensions,
-                    IsActive = true
-                });
+                await _productImageService.AddRangeAsync(productImages);
             }
-
-            await _productImageService.AddRangeAsync(productImages);
+            
 
             return CustomResponseDto<NoContentDto>.Success(200, "Ürün Eklendi");
         }
+       
         public async Task<CustomResponseDto<NoContentDto>> EditProduct(int id, ProductPostDto product)
         {
             var editProduct = await _productRepository.GetByIdAsync(id);
@@ -248,6 +273,7 @@ namespace NLayer.Service.Services
             }
             
         }
+       
         public async Task<CustomResponseDto<List<ProductListDto>>> GetUndeletedProductAsync()
         {
             var products = await _productRepository.GetUndeletedProductAsync();
@@ -325,6 +351,69 @@ namespace NLayer.Service.Services
                 return CustomResponseDto<ProductForEditDto>.Fail(404, "Id not found");
             }
         }
-        
+
+        public async Task<CustomResponseDto<ProductIDataDto>> GetProductsByCategoryName(List<string> categories)
+        {
+            ProductIDataDto productData = new ProductIDataDto();
+
+            #region Navigation
+            var cats = _categoryRepository.GetAll().Where(x=>x.IsDeleted == false && x.IsActive == true).ToList();
+            List<string> cat = new List<string>();
+            int i = 0;
+            foreach (var category in categories)
+            {
+                Category catent = new Category();
+                if (i == 0)
+                {
+                    catent = cats.Where(x => SeoHelper.ToSeoUrl(x.Name) == category).FirstOrDefault();
+                    cat.Add(catent.Name);
+                }
+                else
+                {
+                    catent = cats.Where(x => x.SubId == i && SeoHelper.ToSeoUrl(x.Name) == category).FirstOrDefault();
+                    cat.Add(catent.Name);
+                }
+                i = catent.Id;
+                
+            }
+            productData.Navigation = cat;
+            #endregion
+
+            #region Product
+            List<ProductIListDto> products = new List<ProductIListDto>();
+            if (await _categoryRepository.AnyAsync(x=> x.Id != x.SubId && x.SubId == i && x.IsActive == true && x.IsDeleted == false))
+            {  
+                var subCategories = _categoryRepository.Where(x => x.Id != x.SubId && x.SubId == i && x.IsActive == true && x.IsDeleted == false).ToList();
+                foreach (var category in subCategories)
+                {
+                    if(await _categoryRepository.AnyAsync(x => x.SubId == category.Id && x.IsActive == true && x.IsDeleted == false)){
+                        //sonsuz fonksiyon
+                        products.AddRange(await CategorySubLoop(category.Id));
+                    } 
+                    else
+                    {
+                        //ekle
+                        products.AddRange(await _productRepository.GetProductWithFeaturesByCategoryId(category.Id));
+                    }
+                }
+            }
+            else
+            {
+                products = await _productRepository.GetProductWithFeaturesByCategoryId(i);
+            }
+            
+            productData.Products = products;
+            #endregion
+
+            #region ProductNavigation
+            ProductINavDto productINav = new ProductINavDto();
+            productINav.CategoryName = productData.Navigation.Last();
+            productINav.ProductCount = productData.Products.Count();
+
+            productData.ProductNav = productINav;
+            #endregion
+
+            return CustomResponseDto<ProductIDataDto>.Success(200, productData);
+        }
     }
 }

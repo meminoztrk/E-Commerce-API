@@ -1,4 +1,5 @@
-﻿using NLayer.Core.Models;
+﻿using NLayer.Core.DTOs.ProductDTOs;
+using NLayer.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,6 @@ namespace NLayer.Core.Repositories
         Task<List<Product>> GetProductWithCategory();
         Task<List<CategoryFeature>> GetCategoryFeaturesByCategoryId(int id);
         Task<List<Product>> GetUndeletedProductAsync();
+        Task<List<ProductIListDto>> GetProductWithFeaturesByCategoryId(int id);
     }
 }
