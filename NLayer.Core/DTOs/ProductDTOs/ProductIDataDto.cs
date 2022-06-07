@@ -8,9 +8,9 @@ namespace NLayer.Core.DTOs.ProductDTOs
 {
     public class ProductIDataDto
     {
-        public List<string> Navigation { get; set; }
+        public List<ProductINavigationDto> Navigation { get; set; }
         public List<ProductIListDto> Products { get; set; }
         public ProductINavDto ProductNav { get; set; }
-        public List<ProductIFeatureDto> ProductFeatures { get; set; }
+        public ProductIFeatureDto ProductFeatures { get; set; }
     }
 }

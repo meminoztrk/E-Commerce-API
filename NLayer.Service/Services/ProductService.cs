@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using NLayer.Core;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.BrandDTOs;
 using NLayer.Core.DTOs.FeatureDTOs;
 using NLayer.Core.DTOs.ProductDTOs;
 using NLayer.Core.Models;
@@ -20,19 +21,21 @@ namespace NLayer.Service.Services
         private readonly IFeatureDetailRepository _featureDetailRepository;
         private readonly IProductFeatureService _productFeatureService;
         private readonly IFeatureDetailService _featureDetailService;
+        private readonly IFeatureService _featureService;
         private readonly IProductImageService _productImageService;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
         public ProductService(IGenericRepository<Product> repository, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork,
-                                                 IProductRepository productRepository, IProductFeatureService productFeatureService, IFeatureDetailService featureDetailService, IProductImageService productImageService, IFeatureDetailRepository featureDetailRepository,
+                                                 IFeatureService featureService, IProductRepository productRepository, IProductFeatureService productFeatureService, IFeatureDetailService featureDetailService, IProductImageService productImageService, IFeatureDetailRepository featureDetailRepository,
                                                  IWebHostEnvironment webHostEnvironment, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(repository, unitOfWork)
         {
             _productRepository = productRepository;
             _featureDetailRepository = featureDetailRepository;
             _productFeatureService = productFeatureService;
             _featureDetailService = featureDetailService;
+            _featureService = featureService;
             _categoryRepository = categoryRepository;
             _productImageService = productImageService;
             _webHostEnvironment = webHostEnvironment;
@@ -82,7 +85,9 @@ namespace NLayer.Service.Services
             }
             return CustomResponseDto<List<ProductCatChildDto>>.Success(200, category);
         }
-
+       
+       
+       
         public async Task<CustomResponseDto<List<ProductWithCategoryDto>>> GetProductWithCategory()
         {
             var product = await _productRepository.GetProductWithCategory();
@@ -352,30 +357,60 @@ namespace NLayer.Service.Services
             }
         }
 
+
+        public List<ProductCatChildWithTitleDto> GetCategoryWithTitleChild(int index, Category main, List<string> categories,List<Category> cats, string path)
+        {
+            List<ProductCatChildWithTitleDto> category = new List<ProductCatChildWithTitleDto>();
+            if (index < categories.Count())
+            {
+                var maincat = cats.Where(x => SeoHelper.ToSeoUrl(x.Name) == categories[index]).FirstOrDefault();
+                string lastPath = path + "/" + categories[index];
+                category.Add(new ProductCatChildWithTitleDto { Key = lastPath, Title = maincat.Name, Children = GetCategoryWithTitleChild(index + 1, maincat, categories, cats, lastPath) });
+            }
+            else
+            {
+                var endCategories = cats.Where(x => x.Id != x.SubId && x.SubId == main.Id).Select(x=>new ProductCatChildWithTitleDto
+                {
+                    Key = path + "/" + SeoHelper.ToSeoUrl(x.Name),
+                    Title = x.Name,
+                    Children = null
+                }).ToList();
+
+                category.AddRange(endCategories);
+            }
+            
+            return category;
+        }
+
+
         public async Task<CustomResponseDto<ProductIDataDto>> GetProductsByCategoryName(List<string> categories)
         {
             ProductIDataDto productData = new ProductIDataDto();
-
+            int lastCatId = 0;
             #region Navigation
+           
             var cats = _categoryRepository.GetAll().Where(x=>x.IsDeleted == false && x.IsActive == true).ToList();
-            List<string> cat = new List<string>();
+            List<ProductINavigationDto> cat = new List<ProductINavigationDto>();
             int i = 0;
+            string mainpath = "/kategori";
             foreach (var category in categories)
             {
+                mainpath += "/" + category;
                 Category catent = new Category();
                 if (i == 0)
                 {
                     catent = cats.Where(x => SeoHelper.ToSeoUrl(x.Name) == category).FirstOrDefault();
-                    cat.Add(catent.Name);
+                    cat.Add(new ProductINavigationDto { Path = mainpath, Name = catent.Name});
+                    lastCatId = catent.Id;
                 }
                 else
                 {
                     catent = cats.Where(x => x.SubId == i && SeoHelper.ToSeoUrl(x.Name) == category).FirstOrDefault();
-                    cat.Add(catent.Name);
+                    cat.Add(new ProductINavigationDto { Path = mainpath, Name = catent.Name });
+                    lastCatId = catent.Id;
                 }
                 i = catent.Id;
-                
-            }
+            }    
             productData.Navigation = cat;
             #endregion
 
@@ -407,11 +442,42 @@ namespace NLayer.Service.Services
 
             #region ProductNavigation
             ProductINavDto productINav = new ProductINavDto();
-            productINav.CategoryName = productData.Navigation.Last();
+            productINav.CategoryName = productData.Navigation.Last().Name;
             productINav.ProductCount = productData.Products.Count();
 
             productData.ProductNav = productINav;
             #endregion
+
+            ProductIFeatureDto features = new ProductIFeatureDto();
+
+            List<ProductCatChildWithTitleDto> treeData = new List<ProductCatChildWithTitleDto>();
+            var maincat = cats.Where(x => SeoHelper.ToSeoUrl(x.Name) == categories[0]).FirstOrDefault();
+            string path = "/kategori/" + categories[0];
+            treeData.Add(new ProductCatChildWithTitleDto { Key = path, Title = maincat.Name, Children = GetCategoryWithTitleChild(1, maincat, categories, cats, path) });
+            features.TreeData = treeData;
+
+            
+
+
+            var groupBrands = products.GroupBy(x => x.Brand).Select(x=> x.Key).ToList();
+            features.Brands = groupBrands;
+
+            var groupColors = products.GroupBy(x => x.Color).Select(x => x.Key).ToList();
+            features.Colors = groupColors;
+
+            if (!cats.Any(x => x.SubId == lastCatId))
+            {
+                //var groupFeatures = products.GroupBy(x => x.Features).Select(x => new CategoryFeatureWithValuesDto {  Name = x.Key }).ToList();
+                var allfeatures = await _featureService.GetAllAsync();
+                var groupFeatures = allfeatures.Where(x=>x.CategoryId == lastCatId).Select(x=> new CategoryFeatureWithValuesDto { 
+                    Name = x.Name ,
+                    Values = _featureDetailRepository.GetAll().Where(y=>y.CategoryFeatureId == x.Id).GroupBy(x=>x.Value).Select(x=>x.Key).ToList()
+                    
+                }).ToList();
+                features.Values = groupFeatures;
+            }
+
+            productData.ProductFeatures = features;
 
             return CustomResponseDto<ProductIDataDto>.Success(200, productData);
         }
