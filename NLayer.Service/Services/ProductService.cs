@@ -219,18 +219,22 @@ namespace NLayer.Service.Services
                 #region Category Features
                 var categoryFeatures = _featureDetailService.Where(x => x.ProductId == id).ToList();
                 List<FeatureDetail> featureDetails = new List<FeatureDetail>();
-                foreach (var feature in product.CategoryFeatures)
+                if(product.CategoryFeatures != null)
                 {
-                    featureDetails.Add(new FeatureDetail()
+                    foreach (var feature in product.CategoryFeatures)
                     {
-                        ProductId = editProduct.Id,
-                        CategoryFeatureId = feature.CategoryFeatureId,
-                        Value = feature.Value,
-                        IsActive = true
-                    });
+                        featureDetails.Add(new FeatureDetail()
+                        {
+                            ProductId = editProduct.Id,
+                            CategoryFeatureId = feature.CategoryFeatureId,
+                            Value = feature.Value,
+                            IsActive = true
+                        });
+                    }
+                    await _featureDetailService.AddRangeAsync(featureDetails);
+                    await _featureDetailService.RemoveRangeAsync(categoryFeatures);
                 }
-                await _featureDetailService.AddRangeAsync(featureDetails);
-                await _featureDetailService.RemoveRangeAsync(categoryFeatures);
+                
                 #endregion
 
                 #region Product Images
