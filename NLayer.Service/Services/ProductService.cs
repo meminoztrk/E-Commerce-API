@@ -386,7 +386,6 @@ namespace NLayer.Service.Services
             return category;
         }
 
-
         public async Task<CustomResponseDto<ProductIDataDto>> GetProductsByCategoryName(List<string> categories)
         {
             ProductIDataDto productData = new ProductIDataDto();
@@ -452,6 +451,7 @@ namespace NLayer.Service.Services
             productData.ProductNav = productINav;
             #endregion
 
+            #region Product Feature
             ProductIFeatureDto features = new ProductIFeatureDto();
 
             List<ProductCatChildWithTitleDto> treeData = new List<ProductCatChildWithTitleDto>();
@@ -482,8 +482,55 @@ namespace NLayer.Service.Services
             }
 
             productData.ProductFeatures = features;
+            #endregion
 
             return CustomResponseDto<ProductIDataDto>.Success(200, productData);
+        }
+
+        public async Task<CustomResponseDto<ProductISingleDto>> GetSingleProduct(int id)
+        {
+            var product = await  _productRepository.GetProductWithRelationsById(id);
+            ProductISingleDto singleDto = new ProductISingleDto();
+            singleDto.Id = product.Id;
+            singleDto.Name = product.Name;
+            singleDto.Brand = product.Brand.Name;
+            singleDto.Description = product.Description;
+            #region Category Navigation Section
+            List<ProductINavigationDto> cat = new List<ProductINavigationDto>();
+            List<string> catNames = new List<string>();
+            while (true)
+            {
+                var Category = _categoryRepository.Where(x => x.Id == product.CategoryId).FirstOrDefault();
+                product.CategoryId = Category.SubId;
+                catNames.Add(Category.Name);
+                if (Category.Id == Category.SubId)
+                {
+                    break;
+                }
+            }
+
+            string mainpath = "/kategori";
+            for (int i = catNames.Count() - 1;i>= 0; i--)
+            {
+                mainpath += "/" + SeoHelper.ToSeoUrl(catNames[i]);
+                cat.Add(new ProductINavigationDto { Name= catNames[i], Path= mainpath });
+            }
+            singleDto.Navigation = cat;
+            #endregion
+
+            #region Product Features
+            var features = product.ProductFeatures.Select(x => new ProductFeatureWithIdDto { Id = x.Id, Color = x.Color, Status = x.Status, Stock = x.Stock, FePrice = x.FePrice }).ToList();
+            singleDto.Features = features;
+            #endregion
+
+            #region Images
+            List<string> images = new List<string>();
+            var request = _httpContextAccessor.HttpContext.Request;
+            images = product.ProductImages.Select(x => request.Scheme + "://" + request.Host.Value + "/img/product/" + x.Path).ToList();
+            singleDto.Pictures = images;
+            #endregion
+
+            return CustomResponseDto<ProductISingleDto>.Success(200, singleDto);
         }
     }
 }

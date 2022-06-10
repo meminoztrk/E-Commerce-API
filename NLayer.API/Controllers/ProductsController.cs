@@ -23,6 +23,11 @@ namespace NLayer.API.Controllers
            _webHostEnvironment = webHostEnvironment;
         }
 
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetSingleProduct(int id)
+        {
+            return CreateActionResult(await _productService.GetSingleProduct(id));
+        }
         [HttpPost("[action]")]
         public async Task<IActionResult> GetProductsByCategoryName([FromBody] List<string> categories)
         {

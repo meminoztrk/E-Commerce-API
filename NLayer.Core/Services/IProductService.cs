@@ -19,6 +19,7 @@ namespace NLayer.Core.Services
         Task<CustomResponseDto<List<ProductListDto>>> GetUndeletedProductAsync();
         Task<CustomResponseDto<ProductForEditDto>> GetProduct(int id);
         Task<CustomResponseDto<ProductIDataDto>> GetProductsByCategoryName(List<string> categories);
+        Task<CustomResponseDto<ProductISingleDto>> GetSingleProduct(int id);
 
     }
 }

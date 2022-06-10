@@ -13,6 +13,8 @@ namespace NLayer.Core.Repositories
         Task<List<Product>> GetProductWithCategory();
         Task<List<CategoryFeature>> GetCategoryFeaturesByCategoryId(int id);
         Task<List<Product>> GetUndeletedProductAsync();
+        Task<Product> GetProductWithRelationsById(int id);
         Task<List<ProductIListDto>> GetProductWithFeaturesByCategoryId(int id);
+
     }
 }

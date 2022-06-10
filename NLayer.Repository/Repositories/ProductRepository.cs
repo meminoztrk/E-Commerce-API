@@ -51,5 +51,15 @@ namespace NLayer.Repository.Repositories
             }).ToListAsync();
         }
 
+        public async Task<Product> GetProductWithRelationsById(int id)
+        {
+            return await _context.Products
+                .Include(x => x.ProductImages)
+                .Include(x => x.ProductFeatures)
+                .Include(x => x.Brand)
+                .Include(x => x.FeatureDetails).ThenInclude(x => x.CategoryFeature)
+                .Where(x=>x.Id == id && x.IsActive == true && x.IsDeleted == false)
+                .SingleOrDefaultAsync();
+        }
     }
 }
