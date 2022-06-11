@@ -32,7 +32,7 @@ namespace NLayer.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserLoginDto userLoginDto)
         {
-            var user =  _userService.GetByUsername(userLoginDto.Username);
+            var user =  _userService.GetByUsername(userLoginDto.Email);
 
             if (user == null) return BadRequest(new { message = "Invalid Credentials" });
 
