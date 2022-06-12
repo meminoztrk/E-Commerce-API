@@ -26,6 +26,7 @@ namespace NLayer.Repository
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<ProductFeature> ProductFeatures { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<Cart> Carts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

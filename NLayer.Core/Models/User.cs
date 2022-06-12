@@ -14,5 +14,6 @@ namespace NLayer.Core.Models
         public string Email { get; set; }
         public string Phone { get; set; }
         [JsonIgnore] public string Password { get; set; }
+        public ICollection<Cart> Carts { get; set; }
     }
 }

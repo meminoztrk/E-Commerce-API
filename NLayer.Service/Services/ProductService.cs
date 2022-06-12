@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using NLayer.Core;
 using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.BrandDTOs;
+using NLayer.Core.DTOs.CartDTOs;
 using NLayer.Core.DTOs.FeatureDTOs;
 using NLayer.Core.DTOs.ProductDTOs;
 using NLayer.Core.Models;
@@ -23,12 +24,15 @@ namespace NLayer.Service.Services
         private readonly IFeatureDetailService _featureDetailService;
         private readonly IFeatureService _featureService;
         private readonly IProductImageService _productImageService;
+        private readonly ICartService _cartService;
+        private readonly ICartRepository _cartRepository;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ProductService(IGenericRepository<Product> repository, ICategoryRepository categoryRepository, IUnitOfWork unitOfWork,
-                                                 IFeatureService featureService, IProductRepository productRepository, IProductFeatureService productFeatureService, IFeatureDetailService featureDetailService, IProductImageService productImageService, IFeatureDetailRepository featureDetailRepository,
+        public ProductService(IGenericRepository<Product> repository, ICategoryRepository categoryRepository, ICartRepository cartRepository, IUnitOfWork unitOfWork,
+                                                 ICartService cartService, IFeatureService featureService, IProductRepository productRepository, IProductFeatureService productFeatureService, 
+                                                 IFeatureDetailService featureDetailService, IProductImageService productImageService, IFeatureDetailRepository featureDetailRepository,
                                                  IWebHostEnvironment webHostEnvironment, IMapper mapper, IHttpContextAccessor httpContextAccessor) : base(repository, unitOfWork)
         {
             _productRepository = productRepository;
@@ -38,6 +42,8 @@ namespace NLayer.Service.Services
             _featureService = featureService;
             _categoryRepository = categoryRepository;
             _productImageService = productImageService;
+            _cartService = cartService;
+            _cartRepository = cartRepository;
             _webHostEnvironment = webHostEnvironment;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
@@ -85,8 +91,6 @@ namespace NLayer.Service.Services
             }
             return CustomResponseDto<List<ProductCatChildDto>>.Success(200, category);
         }
-       
-       
        
         public async Task<CustomResponseDto<List<ProductWithCategoryDto>>> GetProductWithCategory()
         {
@@ -361,7 +365,6 @@ namespace NLayer.Service.Services
             }
         }
 
-
         public List<ProductCatChildWithTitleDto> GetCategoryWithTitleChild(int index, Category main, List<string> categories,List<Category> cats, string path)
         {
             List<ProductCatChildWithTitleDto> category = new List<ProductCatChildWithTitleDto>();
@@ -531,6 +534,66 @@ namespace NLayer.Service.Services
             #endregion
 
             return CustomResponseDto<ProductISingleDto>.Success(200, singleDto);
+        }
+
+        public async Task<CustomResponseDto<NoContentDto>> AddManyCart(CartAddManyDto manyCart)
+        {
+            var carts = _cartService.Where(x => x.UserId == manyCart.UserId).ToList();
+            List<Cart> newCart = new List<Cart>();
+            foreach (var item in manyCart.Cart)
+            {
+                if (carts.Any(x => x.ProductFeatureId == item.Id))
+                {
+                    var selectedCart = carts.Where(x => x.ProductFeatureId == item.Id).FirstOrDefault();
+                    selectedCart.Quantity += item.Count;
+                    await _cartService.UpdateAsync(selectedCart);
+                }
+                else
+                {
+                    newCart.Add(new Cart { UserId = manyCart.UserId, ProductFeatureId = item.Id, Quantity = item.Count });    
+                }
+            }
+
+            if(manyCart.Cart.Count() > 0) { await _cartService.AddRangeAsync(newCart); };
+   
+
+            return CustomResponseDto<NoContentDto>.Success(200, "Ürünler Sepete Eklendi");
+        }
+        public async Task<CustomResponseDto<NoContentDto>> AddCart(CartAddDto cart)
+        {
+            var carts = _cartService.Where(x => x.UserId == cart.UserId).ToList();
+            if (carts.Any(x => x.ProductFeatureId == cart.Cart.Id))
+            {
+                var selectedCart = carts.Where(x => x.ProductFeatureId == cart.Cart.Id).FirstOrDefault();
+                selectedCart.Quantity += cart.Cart.Count;
+                await _cartService.UpdateAsync(selectedCart);
+            }
+            else
+            {
+                await _cartService.AddAsync(new Cart { UserId = cart.UserId, ProductFeatureId = cart.Cart.Id, Quantity = cart.Cart.Count });
+            }
+            return CustomResponseDto<NoContentDto>.Success(200, "Ürün Sepete Eklendi");
+        }
+        public async Task<CustomResponseDto<List<CartWithImageDto>>> GetCart(int id)
+        {
+            var cart = await _cartRepository.GetCartWithUserId(id);
+            var request = _httpContextAccessor.HttpContext.Request;
+            var selectedCart = cart.Select(x => new CartWithImageDto
+            {
+                Id = x.ProductFeatureId,
+                Name = x.ProductFeature.Product.Name,
+                Count = x.Quantity,
+                Price = x.ProductFeature.FePrice,
+                Image = request.Scheme + "://" + request.Host.Value + "/img/product/" + x.ProductFeature.Product.ProductImages.FirstOrDefault().Path
+            }).ToList();
+            return CustomResponseDto<List<CartWithImageDto>>.Success(200, selectedCart);
+        }
+
+        public async Task<CustomResponseDto<NoContentDto>> DeleteCart(int userId, int productFeatureId)
+        {
+            var cart = _cartService.Where(x => x.UserId == userId && x.ProductFeatureId == productFeatureId).FirstOrDefault();
+            await _cartService.RemoveAsync(cart);
+            return CustomResponseDto<NoContentDto>.Success(200, "Ürün Sepetten Silindi");
         }
     }
 }

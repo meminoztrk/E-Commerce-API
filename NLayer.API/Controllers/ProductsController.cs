@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using NLayer.API.Filters;
 using NLayer.Core;
 using NLayer.Core.DTOs;
+using NLayer.Core.DTOs.CartDTOs;
 using NLayer.Core.DTOs.ProductDTOs;
 using NLayer.Core.Services;
 
@@ -21,6 +22,29 @@ namespace NLayer.API.Controllers
             _mapper = mapper;
             _productService = productService;
            _webHostEnvironment = webHostEnvironment;
+        }
+
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetCart(int id)
+        {
+            return CreateActionResult(await _productService.GetCart(id));
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> AddCart([FromBody] CartAddDto cart)
+        {
+            return CreateActionResult(await _productService.AddCart(cart));
+        }
+
+        [HttpPost("[action]")]
+        public async Task<IActionResult> AddManyCart([FromBody] CartAddManyDto manyCart)
+        {
+            return CreateActionResult(await _productService.AddManyCart(manyCart));
+        }
+        [HttpDelete("[action]")]
+        public async Task<IActionResult> DeleteCart(int userId,int productFeatureId)
+        {
+            return CreateActionResult(await _productService.DeleteCart(userId,productFeatureId));
         }
 
         [HttpGet("[action]")]

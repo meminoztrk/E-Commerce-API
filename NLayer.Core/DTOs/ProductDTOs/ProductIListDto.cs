@@ -10,6 +10,7 @@ namespace NLayer.Core.DTOs.ProductDTOs
     public class ProductIListDto
     {
         public int Id { get; set; }
+        public int ProductFeatureId { get; set; }
         public string Name { get; set; }
         public string Brand { get; set; }
         public string Color { get; set; }

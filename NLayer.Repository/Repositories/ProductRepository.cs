@@ -41,6 +41,7 @@ namespace NLayer.Repository.Repositories
                 .Where(x => x.CategoryId == id && x.IsActive == true && x.IsDeleted == false).Select(x => new ProductIListDto
             {
                 Id = x.Id,
+                ProductFeatureId = x.ProductFeatures.FirstOrDefault().Id,
                 Name = x.Name,
                 Brand = x.Brand.Name,
                 Image = request.Scheme + "://" + request.Host.Value + "/img/product/" + x.ProductImages.FirstOrDefault().Path,

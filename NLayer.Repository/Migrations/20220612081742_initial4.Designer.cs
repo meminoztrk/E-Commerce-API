@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NLayer.Repository;
 
@@ -11,9 +12,10 @@ using NLayer.Repository;
 namespace NLayer.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220612081742_initial4")]
+    partial class initial4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -183,14 +185,9 @@ namespace NLayer.Repository.Migrations
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ProductFeatureId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Carts");
                 });
@@ -398,7 +395,7 @@ namespace NLayer.Repository.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreatedDate = new DateTime(2022, 6, 12, 11, 41, 13, 642, DateTimeKind.Local).AddTicks(177),
+                            CreatedDate = new DateTime(2022, 6, 12, 11, 17, 42, 186, DateTimeKind.Local).AddTicks(3890),
                             IsActive = false,
                             IsDeleted = false,
                             Name = "Kalem 1",
@@ -409,7 +406,7 @@ namespace NLayer.Repository.Migrations
                         {
                             Id = 2,
                             CategoryId = 1,
-                            CreatedDate = new DateTime(2022, 6, 12, 11, 41, 13, 642, DateTimeKind.Local).AddTicks(185),
+                            CreatedDate = new DateTime(2022, 6, 12, 11, 17, 42, 186, DateTimeKind.Local).AddTicks(3899),
                             IsActive = false,
                             IsDeleted = false,
                             Name = "Kalem 2",
@@ -420,7 +417,7 @@ namespace NLayer.Repository.Migrations
                         {
                             Id = 3,
                             CategoryId = 2,
-                            CreatedDate = new DateTime(2022, 6, 12, 11, 41, 13, 642, DateTimeKind.Local).AddTicks(186),
+                            CreatedDate = new DateTime(2022, 6, 12, 11, 17, 42, 186, DateTimeKind.Local).AddTicks(3900),
                             IsActive = false,
                             IsDeleted = false,
                             Name = "Kitap 1",
@@ -479,15 +476,7 @@ namespace NLayer.Repository.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NLayer.Core.Models.User", "User")
-                        .WithMany("Carts")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("ProductFeature");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("NLayer.Core.Models.CategoryFeature", b =>
@@ -564,11 +553,6 @@ namespace NLayer.Repository.Migrations
             modelBuilder.Entity("NLayer.Core.Models.CategoryFeature", b =>
                 {
                     b.Navigation("FeatureDetails");
-                });
-
-            modelBuilder.Entity("NLayer.Core.Models.User", b =>
-                {
-                    b.Navigation("Carts");
                 });
 
             modelBuilder.Entity("NLayer.Core.Product", b =>

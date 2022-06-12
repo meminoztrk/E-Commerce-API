@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLayer.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,5 +15,6 @@ namespace NLayer.Core
         public bool Status { get; set; }
         public int ProductId { get; set; }
         public Product Product { get; set; }
+        public ICollection<Cart> Carts { get; set; }
     }
 }
