@@ -583,6 +583,7 @@ namespace NLayer.Service.Services
                 Id = x.ProductFeatureId,
                 Name = x.ProductFeature.Product.Name,
                 Count = x.Quantity,
+                Color = x.ProductFeature.Color,
                 Price = x.ProductFeature.FePrice,
                 Image = request.Scheme + "://" + request.Host.Value + "/img/product/" + x.ProductFeature.Product.ProductImages.FirstOrDefault().Path
             }).ToList();
@@ -594,6 +595,20 @@ namespace NLayer.Service.Services
             var cart = _cartService.Where(x => x.UserId == userId && x.ProductFeatureId == productFeatureId).FirstOrDefault();
             await _cartService.RemoveAsync(cart);
             return CustomResponseDto<NoContentDto>.Success(200, "Ürün Sepetten Silindi");
+        }
+
+        public async Task<CustomResponseDto<NoContentDto>> SetCartQuantity(int userId, int productFeatureId, string method)
+        {
+            var cart = _cartService.Where(x => x.UserId == userId && x.ProductFeatureId == productFeatureId).FirstOrDefault();
+            if(method == "increase")
+            {
+                cart.Quantity++;
+            }
+            else { 
+                cart.Quantity--;
+            }
+            await _cartService.UpdateAsync(cart);
+            return CustomResponseDto<NoContentDto>.Success(200, "Sepet Güncellendi");
         }
     }
 }

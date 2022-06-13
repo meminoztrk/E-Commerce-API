@@ -24,6 +24,7 @@ namespace NLayer.Core.Services
         Task<CustomResponseDto<NoContentDto>> AddManyCart(CartAddManyDto manyCart);
         Task<CustomResponseDto<NoContentDto>> AddCart(CartAddDto cart);
         Task<CustomResponseDto<NoContentDto>> DeleteCart(int userId, int productFeatureId);
+        Task<CustomResponseDto<NoContentDto>> SetCartQuantity(int userId, int productFeatureId, string method);
         Task<CustomResponseDto<List<CartWithImageDto>>> GetCart(int id);
         
 

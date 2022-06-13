@@ -23,7 +23,12 @@ namespace NLayer.API.Controllers
             _productService = productService;
            _webHostEnvironment = webHostEnvironment;
         }
-
+        
+        [HttpPut("[action]")]
+        public async Task<IActionResult> SetCartQuantity(int userId, int productFeatureId, string method)
+        {
+            return CreateActionResult(await _productService.SetCartQuantity(userId,productFeatureId,method));
+        }
         [HttpGet("[action]")]
         public async Task<IActionResult> GetCart(int id)
         {
