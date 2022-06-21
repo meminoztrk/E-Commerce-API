@@ -4,6 +4,7 @@ using NLayer.Core.DTOs;
 using NLayer.Core.DTOs.BrandDTOs;
 using NLayer.Core.DTOs.CategoryDTOs;
 using NLayer.Core.DTOs.FeatureDTOs;
+using NLayer.Core.DTOs.OrderDTOs;
 using NLayer.Core.DTOs.ProductDTOs;
 using NLayer.Core.Models;
 using System;
@@ -48,6 +49,8 @@ namespace NLayer.Service.Mapping
             CreateMap<CategoryFeature, CategoryFeaturePostDto>();
             CreateMap<CategoryFeature, CategoryFeaturePostDto>().ReverseMap();
             CreateMap<CategoryFeature, CategoryFeatureWithNameDto>();
+
+            CreateMap<Order, OrderDto>();
 
         }
     }

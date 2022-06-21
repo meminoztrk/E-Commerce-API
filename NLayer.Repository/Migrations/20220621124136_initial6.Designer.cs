@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NLayer.Repository;
 
@@ -11,9 +12,10 @@ using NLayer.Repository;
 namespace NLayer.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220621124136_initial6")]
+    partial class initial6
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,7 +156,7 @@ namespace NLayer.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands", (string)null);
+                    b.ToTable("Brands");
                 });
 
             modelBuilder.Entity("NLayer.Core.Models.Cart", b =>
@@ -192,7 +194,7 @@ namespace NLayer.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Carts", (string)null);
+                    b.ToTable("Carts");
                 });
 
             modelBuilder.Entity("NLayer.Core.Models.CategoryFeature", b =>
@@ -225,7 +227,7 @@ namespace NLayer.Repository.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("CategoryFeatures", (string)null);
+                    b.ToTable("CategoryFeatures");
                 });
 
             modelBuilder.Entity("NLayer.Core.Models.FeatureDetail", b =>
@@ -263,7 +265,7 @@ namespace NLayer.Repository.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("FeatureDetails", (string)null);
+                    b.ToTable("FeatureDetails");
                 });
 
             modelBuilder.Entity("NLayer.Core.Models.Order", b =>
@@ -376,7 +378,7 @@ namespace NLayer.Repository.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages", (string)null);
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("NLayer.Core.Models.User", b =>
