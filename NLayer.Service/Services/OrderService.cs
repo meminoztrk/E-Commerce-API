@@ -19,20 +19,22 @@ namespace NLayer.Service.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IOrderDetailService _orderDetailService;
         private readonly ICartRepository _cartRepository;
+        private readonly ICartService _cartService;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public OrderService(IGenericRepository<Order> repository, IOrderRepository orderRepository, IMapper mapper, IUnitOfWork unitOfWork, ICartRepository cartRepository, IOrderDetailService orderDetailService, IHttpContextAccessor httpContextAccessor) : base(repository, unitOfWork)
+        public OrderService(IGenericRepository<Order> repository, IOrderRepository orderRepository, IMapper mapper, IUnitOfWork unitOfWork, ICartRepository cartRepository, ICartService cartService, IOrderDetailService orderDetailService, IHttpContextAccessor httpContextAccessor) : base(repository, unitOfWork)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;
             _cartRepository = cartRepository;
+            _cartService = cartService;
             _orderDetailService = orderDetailService;
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<CustomResponseDto<List<OrderDto>>> GetOrderWithDetailByUserId(int id)
+        public async Task<CustomResponseDto<List<OrderDto>>> GetPendingOrderWithDetailByUserId(int id)
         {
-            var orders = await _orderRepository.GetOrderWithDetailByUserId(id);
+            var orders = await _orderRepository.GetPendingOrderWithDetailByUserId(id);
             var request = _httpContextAccessor.HttpContext.Request;
             var userOrders = orders.Select(x => new OrderDto
             {
@@ -61,9 +63,70 @@ namespace NLayer.Service.Services
             return CustomResponseDto<List<OrderDto>>.Success(200, userOrders);
         }
 
-        public async Task<CustomResponseDto<List<OrderDto>>> GetUndeletedOrders()
+        public async Task<CustomResponseDto<List<OrderDto>>> GetCompletedOrderWithDetailByUserId(int id)
         {
-            var orders = await _orderRepository.GetUndeletedOrders();
+            var orders = await _orderRepository.GetCompletedOrderWithDetailByUserId(id);
+            var request = _httpContextAccessor.HttpContext.Request;
+            var userOrders = orders.Select(x => new OrderDto
+            {
+                Id = x.Id,
+                UserId = (int)x.UserId,
+                Status = x.Status,
+                Total = x.Total,
+                CreatedDate = x.CreatedDate,
+                UpdatedDate = x.UpdatedDate,
+                User = new UserDto { Id = x.User.Id, Email = x.User.Email, Name = x.User.Name, Surname = x.User.Surname, Phone = x.User.Phone, },
+                OrderDetail = x.OrderDetails.Select(y => new OrderDetailDto
+                {
+                    Id = y.Id,
+                    ProductId = y.ProductFeature.ProductId,
+                    ProductName = y.ProductFeature.Product.Name,
+                    Color = y.ProductFeature.Color,
+                    ProductPrice = y.ProductFeature.FePrice,
+                    Quantity = y.Quantity,
+                    Path = request.Scheme + "://" + request.Host.Value + "/img/product/" + y.ProductFeature.Product.ProductImages.FirstOrDefault().Path,
+                    Status = y.Status,
+                    Total = y.Quantity * y.ProductFeature.FePrice
+                }).ToList(),
+
+            }).ToList();
+
+            return CustomResponseDto<List<OrderDto>>.Success(200, userOrders);
+        }
+
+        public async Task<CustomResponseDto<List<OrderDto>>> GetUndeletedPendingOrders()
+        {
+            var orders = await _orderRepository.GetUndeletedPendingOrders();
+            var request = _httpContextAccessor.HttpContext.Request;
+            var userOrders = orders.Select(x => new OrderDto
+            {
+                Id = x.Id,
+                UserId = (int)x.UserId,
+                Status = x.Status,
+                Total = x.Total,
+                CreatedDate = x.CreatedDate,
+                UpdatedDate = x.UpdatedDate,
+                User = new UserDto { Id = x.User.Id, Email = x.User.Email, Name = x.User.Name, Surname = x.User.Surname, Phone = x.User.Phone, },
+                OrderDetail = x.OrderDetails.Select(y => new OrderDetailDto
+                {
+                    Id = y.Id,
+                    ProductId = y.ProductFeature.ProductId,
+                    ProductName = y.ProductFeature.Product.Name,
+                    Color = y.ProductFeature.Color,
+                    ProductPrice = y.ProductFeature.FePrice,
+                    Quantity = y.Quantity,
+                    Path = request.Scheme + "://" + request.Host.Value + "/img/product/" + y.ProductFeature.Product.ProductImages.FirstOrDefault().Path,
+                    Status = y.Status,
+                    Total = y.Quantity * y.ProductFeature.FePrice
+                }).ToList(),
+
+            }).ToList();
+
+            return CustomResponseDto<List<OrderDto>>.Success(200, userOrders);
+        }
+        public async Task<CustomResponseDto<List<OrderDto>>> GetUndeletedCompletedOrders()
+        {
+            var orders = await _orderRepository.GetUndeletedCompletedOrders();
             var request = _httpContextAccessor.HttpContext.Request;
             var userOrders = orders.Select(x => new OrderDto
             {
@@ -124,6 +187,7 @@ namespace NLayer.Service.Services
                     });
                 }
                 await _orderDetailService.AddRangeAsync(orderDetails);
+                await _cartService.RemoveRangeAsync(userCart);
             }
 
             return CustomResponseDto<NoContentDto>.Success(200, "Sipariş Oluşturuldu");

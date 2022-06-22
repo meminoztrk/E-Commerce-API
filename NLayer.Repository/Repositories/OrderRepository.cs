@@ -15,14 +15,24 @@ namespace NLayer.Repository.Repositories
         {
         }
 
-        public async Task<List<Order>> GetOrderWithDetailByUserId(int id)
+        public async Task<List<Order>> GetPendingOrderWithDetailByUserId(int id)
         {
-            return await _context.Orders.Include(x=>x.User).Include(x=>x.OrderDetails).ThenInclude(x => x.ProductFeature).ThenInclude(x => x.Product).ThenInclude(x=>x.ProductImages).Where(x=>x.UserId == id && x.IsActive == true && x.IsDeleted == false).ToListAsync();
+            return await _context.Orders.Include(x=>x.User).Include(x=>x.OrderDetails).ThenInclude(x => x.ProductFeature).ThenInclude(x => x.Product).ThenInclude(x=>x.ProductImages).Where(x=>x.UserId == id && x.Status != "Teslim Edildi" && x.IsActive == true && x.IsDeleted == false).OrderByDescending(x=>x.Id).ToListAsync();
         }
 
-        public async Task<List<Order>> GetUndeletedOrders()
+        public async Task<List<Order>> GetCompletedOrderWithDetailByUserId(int id)
         {
-            return await _context.Orders.Include(x => x.User).Include(x => x.OrderDetails).ThenInclude(x=>x.ProductFeature).ThenInclude(x=>x.Product).ThenInclude(x => x.ProductImages).Where(x => x.IsActive == true && x.IsDeleted == false).ToListAsync();
+            return await _context.Orders.Include(x => x.User).Include(x => x.OrderDetails).ThenInclude(x => x.ProductFeature).ThenInclude(x => x.Product).ThenInclude(x => x.ProductImages).Where(x => x.UserId == id && x.Status == "Teslim Edildi" && x.IsActive == true && x.IsDeleted == false).OrderByDescending(x => x.Id).ToListAsync();
+        }
+
+        public async Task<List<Order>> GetUndeletedCompletedOrders()
+        {
+            return await _context.Orders.Include(x => x.User).Include(x => x.OrderDetails).ThenInclude(x => x.ProductFeature).ThenInclude(x => x.Product).ThenInclude(x => x.ProductImages).Where(x => x.Status == "Teslim Edildi" && x.IsActive == true && x.IsDeleted == false).OrderByDescending(x => x.Id).ToListAsync();
+        }
+
+        public async Task<List<Order>> GetUndeletedPendingOrders()
+        {
+            return await _context.Orders.Include(x => x.User).Include(x => x.OrderDetails).ThenInclude(x=>x.ProductFeature).ThenInclude(x=>x.Product).ThenInclude(x => x.ProductImages).Where(x => x.Status != "Teslim Edildi" && x.IsActive == true && x.IsDeleted == false).OrderByDescending(x => x.Id).ToListAsync();
         }
     }
 }

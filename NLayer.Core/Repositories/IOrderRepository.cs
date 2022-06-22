@@ -9,7 +9,9 @@ namespace NLayer.Core.Repositories
 {
     public interface IOrderRepository:IGenericRepository<Order>
     {
-        Task<List<Order>> GetOrderWithDetailByUserId(int id);
-        Task<List<Order>> GetUndeletedOrders();
+        Task<List<Order>> GetPendingOrderWithDetailByUserId(int id);
+        Task<List<Order>> GetCompletedOrderWithDetailByUserId(int id);
+        Task<List<Order>> GetUndeletedPendingOrders();
+        Task<List<Order>> GetUndeletedCompletedOrders();
     }
 }

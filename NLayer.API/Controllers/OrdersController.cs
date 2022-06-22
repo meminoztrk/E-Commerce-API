@@ -21,15 +21,25 @@ namespace NLayer.API.Controllers
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetOrderWithDetailByUserId(int id)
+        public async Task<IActionResult> GetPendingOrderWithDetailByUserId(int id)
         {
-            return CreateActionResult(await _orderService.GetOrderWithDetailByUserId(id));
+            return CreateActionResult(await _orderService.GetPendingOrderWithDetailByUserId(id));
+        }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetCompletedOrderWithDetailByUserId(int id)
+        {
+            return CreateActionResult(await _orderService.GetCompletedOrderWithDetailByUserId(id));
         }
 
         [HttpGet("[action]")]
-        public async Task<IActionResult> GetUndeletedOrders()
+        public async Task<IActionResult> GetUndeletedPendingOrders()
         {
-            return CreateActionResult(await _orderService.GetUndeletedOrders());
+            return CreateActionResult(await _orderService.GetUndeletedPendingOrders());
+        }
+        [HttpGet("[action]")]
+        public async Task<IActionResult> GetUndeletedCompletedOrders()
+        {
+            return CreateActionResult(await _orderService.GetUndeletedCompletedOrders());
         }
 
         [HttpPost]

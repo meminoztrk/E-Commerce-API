@@ -11,8 +11,10 @@ namespace NLayer.Core.Services
 {
     public interface IOrderService:IService<Order>
     {
-        Task<CustomResponseDto<List<OrderDto>>> GetOrderWithDetailByUserId(int id);
-        Task<CustomResponseDto<List<OrderDto>>> GetUndeletedOrders();
+        Task<CustomResponseDto<List<OrderDto>>> GetPendingOrderWithDetailByUserId(int id);
+        Task<CustomResponseDto<List<OrderDto>>> GetCompletedOrderWithDetailByUserId(int id);
+        Task<CustomResponseDto<List<OrderDto>>> GetUndeletedPendingOrders();
+        Task<CustomResponseDto<List<OrderDto>>> GetUndeletedCompletedOrders();
         Task<CustomResponseDto<NoContentDto>> SaveOrder(int userid);
     }
 }
