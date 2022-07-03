@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using NLayer.Core.DTOs;
 using NLayer.Core.Models;
@@ -92,6 +93,28 @@ namespace NLayer.API.Controllers
             });
 
             return Ok(new { message = "success" });
+        }
+
+        [HttpPatch("{id}")]
+
+        public async Task<IActionResult> UpdatePatch(int id, JsonPatchDocument user)
+        {
+            await _userService.UpdatePatchAsync(id, user);
+            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
+        }
+
+        [HttpPatch("[action]")]
+
+        public async Task<IActionResult> UpdatePasswordPatch(string email, string password, JsonPatchDocument userpatch)
+        {
+            var user = _userService.GetByUsername(email);
+            if (!BCrypt.Net.BCrypt.Verify(password, user.Password))
+            {
+                return BadRequest(new { message = "Passwords not equals." });
+            }
+            userpatch.Operations.FirstOrDefault().value = BCrypt.Net.BCrypt.HashPassword((string)userpatch.Operations.FirstOrDefault().value);
+            await _userService.UpdatePatchAsync(user.Id, userpatch);
+            return CreateActionResult(CustomResponseDto<NoContentDto>.Success(204));
         }
 
     }
