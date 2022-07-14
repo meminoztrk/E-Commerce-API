@@ -56,7 +56,7 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder => containerB
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -69,11 +69,13 @@ app.UseCustomException();
 app.UseAuthorization();
 
 app.UseCors(options => options
-                .WithOrigins(new[] { "http://localhost:3000", "http://localhost:8080", "http://localhost:4200", }) // react, view, angular
+                .WithOrigins(new[] { "http://localhost:3000", "http://localhost:8080", "http://localhost:4200", "http://2.56.154.39:1040", "http://2.56.154.39" }) // react, view, angular
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials()
             );
+
+app.UseAuthentication();
 
 app.MapControllers();
 

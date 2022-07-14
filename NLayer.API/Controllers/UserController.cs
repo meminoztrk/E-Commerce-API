@@ -46,12 +46,13 @@ namespace NLayer.API.Controllers
 
             Response.Cookies.Append("jwt", jwt, new CookieOptions
             {
-                HttpOnly = true,
-                Expires = DateTime.UtcNow.AddDays(7),
+                //HttpOnly = true,
+                Expires = DateTime.UtcNow.AddDays(10),
                 IsEssential = true,
-                SameSite = SameSiteMode.None,
-                Secure = true
+                SameSite = SameSiteMode.Lax,
+                //Secure = true
             });
+
             var userDto = _mapper.Map<UserDto>(user);
             return CreateActionResult(CustomResponseDto<UserDto>.Success(200, userDto));
         }
@@ -85,11 +86,11 @@ namespace NLayer.API.Controllers
 
             Response.Cookies.Delete("jwt", new CookieOptions
             {
-                HttpOnly = true,
+                //HttpOnly = true,
                 Expires = DateTime.UtcNow.AddDays(-1),
                 IsEssential = true,
-                SameSite = SameSiteMode.None,
-                Secure = true
+                SameSite = SameSiteMode.Lax,
+                //Secure = true
             });
 
             return Ok(new { message = "success" });
