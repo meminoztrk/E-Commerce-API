@@ -7,7 +7,7 @@ namespace NLayer.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[ApiKey]
+    [ApiKey]
     public class CustomBaseController : ControllerBase
     {
         [NonAction]

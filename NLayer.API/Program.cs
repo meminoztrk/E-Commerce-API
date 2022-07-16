@@ -55,6 +55,14 @@ builder.Host.ConfigureContainer<ContainerBuilder>(containerBuilder => containerB
 
 var app = builder.Build();
 
+app.UseCors(options => options
+                .WithOrigins(new[] { "http://localhost:3000", "http://localhost:8080", "http://localhost:4200", "http://2.56.154.39:1040", "http://2.56.154.39" }) // react, view, angular
+                                                                                                                                                                   //.WithOrigins(new[] { "http://2.56.154.39:1040" }) // react, view, angular
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials()
+            );
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
@@ -67,13 +75,6 @@ app.UseStaticFiles();
 app.UseCustomException();
 
 app.UseAuthorization();
-
-app.UseCors(options => options
-                .WithOrigins(new[] { "http://localhost:3000", "http://localhost:8080", "http://localhost:4200", "http://2.56.154.39:1040", "http://2.56.154.39" }) // react, view, angular
-                .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials()
-            );
 
 app.UseAuthentication();
 

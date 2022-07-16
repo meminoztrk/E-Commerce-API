@@ -253,28 +253,30 @@ namespace NLayer.Service.Services
                 }
                 await _productImageService.RemoveRangeAsync(productImages);
 
-                List<ProductImage> protImages = new List<ProductImage>();
-                foreach (var item in product.Pictures)
+                if(product.Pictures != null)
                 {
-                    string wwwRootPath = _webHostEnvironment.WebRootPath;
-                    string fileName = Path.GetFileNameWithoutExtension(item.FileName);
-                    string extensions = Path.GetExtension(item.FileName);
-                    string now = DateTime.Now.ToString("yymmssfff");
-                    string path = Path.Combine(wwwRootPath + "/img/product/", fileName.Substring(0, 1) + now + extensions);
-                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    List<ProductImage> protImages = new List<ProductImage>();
+                    foreach (var item in product.Pictures)
                     {
-                        await item.CopyToAsync(fileStream);
+                        string wwwRootPath = _webHostEnvironment.WebRootPath;
+                        string fileName = Path.GetFileNameWithoutExtension(item.FileName);
+                        string extensions = Path.GetExtension(item.FileName);
+                        string now = DateTime.Now.ToString("yymmssfff");
+                        string path = Path.Combine(wwwRootPath + "/img/product/", fileName.Substring(0, 1) + now + extensions);
+                        using (var fileStream = new FileStream(path, FileMode.Create))
+                        {
+                            await item.CopyToAsync(fileStream);
+                        }
+
+                        protImages.Add(new ProductImage()
+                        {
+                            ProductId = editProduct.Id,
+                            Path = fileName.Substring(0, 1) + now + extensions,
+                            IsActive = true
+                        });
                     }
-
-                    protImages.Add(new ProductImage()
-                    {
-                        ProductId = editProduct.Id,
-                        Path = fileName.Substring(0, 1) + now + extensions,
-                        IsActive = true
-                    });
+                    await _productImageService.AddRangeAsync(protImages);
                 }
-                await _productImageService.AddRangeAsync(protImages);
-
                 #endregion
 
 
